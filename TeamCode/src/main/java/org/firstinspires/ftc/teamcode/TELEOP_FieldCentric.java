@@ -68,7 +68,8 @@ public class TELEOP_FieldCentric extends LinearOpMode {
             telemetry.addData("end heading", GlobalVariables.m_autoEndHeading);
 
             // Shooter PIDF readout (Driver Station + FTC Dashboard)
-            m_robot.m_shooter.addTelemetry(telemetry);
+            m_robot.m_shooterPollen.addTelemetry(telemetry);
+            m_robot.m_shooterNecter.addTelemetry(telemetry);
 
             // Per-wheel distance (ticks + inches), power, and velocity
             m_robot.drivetrain.addTelemetry(telemetry);
@@ -87,6 +88,9 @@ public class TELEOP_FieldCentric extends LinearOpMode {
     public void initializeSubsystems() {
         // Send telemetry to both the Driver Station and FTC Dashboard (for graphing)
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        // Clear anything left over from a previous (or crashed) run
+        com.arcrobotics.ftclib.command.CommandScheduler.getInstance().reset();
 
         m_robot = new RobotContainer(this);
         m_driverOp = new GamepadEx(gamepad1);
@@ -116,19 +120,31 @@ public class TELEOP_FieldCentric extends LinearOpMode {
                 new InstantCommand(() -> m_robot.drivetrain.resetDistance())
         );
 
-        // Driver Right Bumper: hold to spin shooter up to TARGET_RPM, release to stop
-        AddButtonCommand(m_driverOp, GamepadKeys.Button.RIGHT_BUMPER,
+        // Driver Right Trigger: Pollen (bottom) fires and finishes, then Necter (top) fires and finishes
+        AddTriggerCommand(m_driverOp, GamepadKeys.Trigger.RIGHT_TRIGGER,
                 new InstantCommand(() -> new CMD_Shoot(m_robot).schedule())
         );
 
-        AddButtonToggleCommand(m_driverOp, GamepadKeys.Button.LEFT_BUMPER,
+        // Driver Left Trigger: hold to run the intake, release to stop
+        AddTriggerToggleCommand(m_driverOp, GamepadKeys.Trigger.LEFT_TRIGGER,
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOn()),
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOff())
         );
 
+        // Driver X: hold to run intake in reverse, release to stop
         AddButtonToggleCommand(m_driverOp, GamepadKeys.Button.X,
                 new InstantCommand(() -> m_robot.m_intake.kIntakeReverse()),
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOff())
+        );
+
+        // Operator Left Trigger: shoot ONLY Pollen (bottom)
+        AddTriggerCommand(m_toolOp, GamepadKeys.Trigger.LEFT_TRIGGER,
+                new InstantCommand(() -> new CMD_shootPollen(m_robot).schedule())
+        );
+
+        // Operator Right Trigger: shoot ONLY Necter (top)
+        AddTriggerCommand(m_toolOp, GamepadKeys.Trigger.RIGHT_TRIGGER,
+                new InstantCommand(() -> new CMD_ShootNecter(m_robot).schedule())
         );
     }
 

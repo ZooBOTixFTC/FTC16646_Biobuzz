@@ -15,6 +15,8 @@ public class Constants {
         public static final double kMaxVel = 2100;
         public static final double kP = 10;
         public static final double kF = 0.88;
+        public static double shootingPollenRPM = 1800;
+        public static double shootingNectarRPM = 1800;
     }
 
     public static final class IntakeConstants {

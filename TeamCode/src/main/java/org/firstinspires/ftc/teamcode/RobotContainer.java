@@ -12,22 +12,24 @@ public class RobotContainer {
     public boolean m_red = true;
     public Robot m_robot = new Robot();
     public MecanumDriveSubsystem drivetrain;
-    public SUB_Shooter m_shooter;
+
+    // Two independent shooters: Pollen = bottom, Necter = top
+    public SUB_ShooterPollen m_shooterPollen;          // bottom, has the stopper servo
+    public SUB_ShooterNectar m_shooterNecter;    // top
+
     public SUB_Intake m_intake;
 
-    public SUB_Transfer m_transfer;
     public GlobalVariables GlobalVariables;
 
     public RobotContainer(OpMode p_opMode) {
         // Initialize drivetrain subsystem with hardware map and default (0,0,0) pose
         drivetrain = new MecanumDriveSubsystem(p_opMode.hardwareMap, new Pose2d(0, 0, 0));
 
-        // Names must match the motor names in your robot configuration
-        m_shooter = new SUB_Shooter(p_opMode.hardwareMap);
+        // Motor and servo names are set at the top of each shooter file.
+        m_shooterPollen = new SUB_ShooterPollen(p_opMode.hardwareMap);
+        m_shooterNecter = new SUB_ShooterNectar(p_opMode.hardwareMap);
 
         m_intake = new SUB_Intake(p_opMode);
-
-        m_transfer = new SUB_Transfer(p_opMode);
     }
 
     public void run() {

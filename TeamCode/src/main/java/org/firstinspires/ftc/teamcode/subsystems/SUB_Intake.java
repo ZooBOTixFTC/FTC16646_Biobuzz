@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Constants;
 
+/** Intake and transfer are the same motor, so this one subsystem runs both. */
 public class SUB_Intake extends SubsystemBase {
 
     private final DcMotorEx m_intakeMotor;
@@ -33,6 +34,15 @@ public class SUB_Intake extends SubsystemBase {
 
     public void kIntakeReverse() {
         m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeReverse);
+    }
+
+    // Same motor, so these just do the same thing (kept so older code still compiles)
+    public void kTransferOn() {
+        kIntakeOn();
+    }
+
+    public void kTransferOff() {
+        kIntakeOff();
     }
 
     public void setMotorPower(double Speed) {
