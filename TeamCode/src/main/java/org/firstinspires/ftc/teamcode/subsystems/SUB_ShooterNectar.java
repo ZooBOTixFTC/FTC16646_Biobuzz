@@ -6,12 +6,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 
-/** NECTER (top) shooter: one flywheel motor with speed control. No stopper. */
+/** NECTER (top) shooter: one flywheel motor with speed control, plus the ball stopper servo. */
 public class SUB_ShooterNectar extends SubsystemBase {
 
     // ---- Speed control gains ----
@@ -24,6 +27,7 @@ public class SUB_ShooterNectar extends SubsystemBase {
     private static final double TICKS_PER_REV = 84;   // 28 ticks x 3:1 reduction = flywheel revs
 
     private final DcMotorEx motor;
+    private final ServoImplEx stopper;
     private final PIDFController controller = new PIDFController(kP, kI, kD, kF);
 
     private boolean enabled = false;
@@ -31,11 +35,16 @@ public class SUB_ShooterNectar extends SubsystemBase {
     private double lastPower = 0;
 
     public SUB_ShooterNectar(HardwareMap hardwareMap) {
-        motor = hardwareMap.get(DcMotorEx.class, "shooter2_motor");
-        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor = hardwareMap.get(DcMotorEx.class, "shooterNectarMotor");
+        motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        stopper = hardwareMap.get(ServoImplEx.class, "stopperNectarServo");
+        stopper.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        stopper.setDirection(Servo.Direction.REVERSE);   // use FORWARD if it turns the wrong way
+        setStopperClosed();
     }
 
     @Override
@@ -46,9 +55,9 @@ public class SUB_ShooterNectar extends SubsystemBase {
         motor.setPower(lastPower);
     }
 
-    /** Spin up to the speed in Constants.ShooterConstants.shootingNectarRPM. */
+    /** Spin up to the speed in Constants.ShooterConstants.NECTAR_TARGET_VELOCITY. */
     public void spinUp() {
-        start(Constants.ShooterConstants.shootingNectarRPM);
+        start(Constants.ShooterConstants.NECTAR_TARGET_VELOCITY);
     }
 
     public void start(double rpm) {
@@ -68,6 +77,16 @@ public class SUB_ShooterNectar extends SubsystemBase {
 
     public boolean atSpeed() {
         return enabled && Math.abs(targetRpm - getRpm()) <= AT_SPEED_TOLERANCE_RPM;
+    }
+
+    // ---- Stopper ----
+
+    public void setStopperClosed() {
+        stopper.setPosition(Constants.ShooterConstants.NECTAR_SERVO_INITIAL_POS);
+    }
+
+    public void setStopperOpen() {
+        stopper.setPosition(Constants.ShooterConstants.NECTAR_SERVO_SECOND_POS);
     }
 
     public void addTelemetry(Telemetry telemetry) {

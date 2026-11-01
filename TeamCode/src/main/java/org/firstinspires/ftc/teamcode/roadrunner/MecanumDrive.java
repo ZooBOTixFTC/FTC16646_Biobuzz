@@ -53,6 +53,7 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -63,13 +64,13 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
-        public double inPerTick = 0.022338; //done
-        public double lateralInPerTick = 0.0236845; //done
-        public double trackWidthTicks = 1313.472706771676; //done
+        public double inPerTick = 0.0224; //done
+        public double lateralInPerTick = 0.02624; //done
+        public double trackWidthTicks = 1023.607908202476; //done
 
         // feedforward parameters (in tick units)
-        public double kS = 1.1925570161068269; //done
-        public double kV = 0.0042523118609407865; //done
+        public double kS = 1.1821908181051626; //done
+        public double kV = 0.004140269059360667; //done
         public double kA = 0.00065;
 
         // path profile parameters (in inches)

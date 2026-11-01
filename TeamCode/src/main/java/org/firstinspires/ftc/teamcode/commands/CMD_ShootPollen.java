@@ -5,28 +5,30 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotContainer;
 
-/** Shoots ONLY Pollen (bottom). Pollen keeps spinning afterward, so later shots skip spin-up. */
-public class CMD_shootPollen extends SequentialCommandGroup {
-
-    public static final long SHOOT_MILLIS = 5000;
-    public static final long SPINUP_TIMEOUT_MILLIS = 2500;
+/**
+ * Shoots Pollen (bottom). The shooter is already spinning, so this just opens the gate and
+ * runs the intake, then closes the gate again. Timings are in Constants.ShooterConstants.
+ */
+public class CMD_ShootPollen extends SequentialCommandGroup {
 
     private final RobotContainer m_robot;
 
-    public CMD_shootPollen(RobotContainer p_robot) {
+    public CMD_ShootPollen(RobotContainer p_robot) {
         m_robot = p_robot;
+        addRequirements(p_robot.m_intake);
 
         addCommands(
-                new InstantCommand(() -> p_robot.m_shooterPollen.spinUp()),
+                // Safety: instant if already at speed, otherwise waits (up to the delay)
                 new WaitUntilCommand(p_robot.m_shooterPollen::atSpeed)
-                        .withTimeout(SPINUP_TIMEOUT_MILLIS),
+                        .withTimeout((long) (Constants.ShooterConstants.POLLEN_SERVO_DELAY_SEC * 1000)),
                 new InstantCommand(() -> {
                     p_robot.m_shooterPollen.setStopperOpen();
                     p_robot.m_intake.kIntakeOn();
                 }),
-                new WaitCommand(SHOOT_MILLIS),
+                new WaitCommand((long) (Constants.ShooterConstants.POLLEN_SERVO_OPEN_SEC * 1000)),
                 new InstantCommand(this::stopFeeding)
         );
     }

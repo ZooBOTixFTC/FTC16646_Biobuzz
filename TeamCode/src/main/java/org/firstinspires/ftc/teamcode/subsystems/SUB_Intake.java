@@ -35,16 +35,6 @@ public class SUB_Intake extends SubsystemBase {
     public void kIntakeReverse() {
         m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeReverse);
     }
-
-    // Same motor, so these just do the same thing (kept so older code still compiles)
-    public void kTransferOn() {
-        kIntakeOn();
-    }
-
-    public void kTransferOff() {
-        kIntakeOff();
-    }
-
     public void setMotorPower(double Speed) {
         m_intakeMotor.setPower(Speed);
     }

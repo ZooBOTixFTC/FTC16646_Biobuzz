@@ -11,6 +11,11 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
  */
 public class RR_MecanumDriveDefault extends CommandBase {
 
+    // Flip any of these to -1 / 1 if that control feels backwards.
+    private static final double FORWARD_SIGN = 1;
+    private static final double STRAFE_SIGN = 1;
+    private static final double TURN_SIGN = 1;
+
     private final MecanumDriveSubsystem drivetrain;
     private final GamepadEx gamepad;
     private final double deadband;
@@ -25,9 +30,9 @@ public class RR_MecanumDriveDefault extends CommandBase {
     @Override
     public void execute() {
         // FTCLib GamepadEx: getLeftY() is already positive when pushed UP
-        double forward = applyDeadband(gamepad.getLeftY());
-        double strafe = applyDeadband(gamepad.getLeftX());
-        double turn = applyDeadband(gamepad.getRightX());
+        double forward = FORWARD_SIGN * applyDeadband(gamepad.getLeftY());
+        double strafe = STRAFE_SIGN * applyDeadband(gamepad.getLeftX());
+        double turn = TURN_SIGN * applyDeadband(gamepad.getRightX());
 
         drivetrain.drive(forward, strafe, turn);
     }

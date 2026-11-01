@@ -47,6 +47,10 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
         waitForStart();
 
+        // Shooters spin the whole time. Shooting only opens the gate and runs the intake.
+        m_robot.m_shooterPollen.spinUp();
+        m_robot.m_shooterNecter.spinUp();
+
         while (!opModeIsActive() && !isStopRequested()) {
             telemetry.update();
         }
@@ -55,6 +59,10 @@ public class TELEOP_FieldCentric extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             // m_robot.run() runs the scheduler, which automatically triggers
             // every subsystem's periodic() (drivetrain localizer + shooter PIDF)
+            // Bumpers/buttons only work if the gamepads are read every loop
+            m_driverOp.readButtons();
+            m_toolOp.readButtons();
+
             m_robot.run();
 
             Pose2d poseEstimate = m_robot.drivetrain.getPoseEstimate();
@@ -103,6 +111,9 @@ public class TELEOP_FieldCentric extends LinearOpMode {
                 new RR_MecanumDriveDefault(m_robot.drivetrain, m_driverOp, 0.03)
         );
 
+        // Intake: left trigger = in, right trigger = out (harder press = more power)
+        m_robot.m_intake.setDefaultCommand(new CMD_IntakeTriggers(m_robot.m_intake, m_driverOp));
+
         setSide();
         GlobalVariables.m_red = m_robot.getRedSide();
 
@@ -111,7 +122,7 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
     public void configureButtonBindings() {
         // Operator Start: Reset field-centric pose to (0,0,0)
-        AddButtonCommand(m_toolOp, GamepadKeys.Button.START,
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.START,
                 new InstantCommand(() -> m_robot.drivetrain.setPoseEstimate(new Pose2d(0, 0, 0)))
         );
 
@@ -120,31 +131,22 @@ public class TELEOP_FieldCentric extends LinearOpMode {
                 new InstantCommand(() -> m_robot.drivetrain.resetDistance())
         );
 
-        // Driver Right Trigger: Pollen (bottom) fires and finishes, then Necter (top) fires and finishes
-        AddTriggerCommand(m_driverOp, GamepadKeys.Trigger.RIGHT_TRIGGER,
-                new InstantCommand(() -> new CMD_Shoot(m_robot).schedule())
+        // Driver Right Bumper: shoot ONLY Pollen (bottom)
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.RIGHT_BUMPER,
+                new InstantCommand(() -> new CMD_ShootPollen(m_robot).schedule())
         );
 
-        // Driver Left Trigger: hold to run the intake, release to stop
-        AddTriggerToggleCommand(m_driverOp, GamepadKeys.Trigger.LEFT_TRIGGER,
-                new InstantCommand(() -> m_robot.m_intake.kIntakeOn()),
-                new InstantCommand(() -> m_robot.m_intake.kIntakeOff())
+        // Driver Left Bumper: shoot ONLY Necter (top)
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.LEFT_BUMPER,
+                new InstantCommand(() -> new CMD_ShootNectar(m_robot).schedule())
         );
 
-        // Driver X: hold to run intake in reverse, release to stop
-        AddButtonToggleCommand(m_driverOp, GamepadKeys.Button.X,
-                new InstantCommand(() -> m_robot.m_intake.kIntakeReverse()),
-                new InstantCommand(() -> m_robot.m_intake.kIntakeOff())
+        // TEMPORARY servo test: A = Pollen gate open, B = Pollen gate closed
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.A,
+                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen())
         );
-
-        // Operator Left Trigger: shoot ONLY Pollen (bottom)
-        AddTriggerCommand(m_toolOp, GamepadKeys.Trigger.LEFT_TRIGGER,
-                new InstantCommand(() -> new CMD_shootPollen(m_robot).schedule())
-        );
-
-        // Operator Right Trigger: shoot ONLY Necter (top)
-        AddTriggerCommand(m_toolOp, GamepadKeys.Trigger.RIGHT_TRIGGER,
-                new InstantCommand(() -> new CMD_ShootNecter(m_robot).schedule())
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.B,
+                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed())
         );
     }
 

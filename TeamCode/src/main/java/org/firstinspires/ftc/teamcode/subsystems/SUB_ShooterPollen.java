@@ -18,18 +18,13 @@ import org.firstinspires.ftc.teamcode.Constants;
 public class SUB_ShooterPollen extends SubsystemBase {
 
     // ---- Speed control gains ----
-    private static final double kP = 0.0005;
-    private static final double kI = 0.0;
+    private static final double kP = 0.0005;//1.067;
+    private static final double kI = 0;//0.11;
     private static final double kD = 0.0;
-    private static final double kF = 0.0005;
+    private static final double kF = 0.0005;//11.7;
 
-    private static final double AT_SPEED_TOLERANCE_RPM = 50;
+    private static final double AT_SPEED_TOLERANCE_RPM = 20;
     private static final double TICKS_PER_REV = 84;   // 28 ticks x 3:1 reduction = flywheel revs
-
-    // ---- Stopper servo (goBILDA 300 degree servo) ----
-    private static final double STOPPER_TURN_FRACTION = 90.0 / 300.0;   // 90 degrees of 300
-    private static final double STOPPER_CLOSED = 0.0;                   // base position blocks balls
-    private static final double STOPPER_OPEN = STOPPER_TURN_FRACTION;   // turned 90 degrees lets balls in
 
     private final DcMotorEx motor;
     private final ServoImplEx stopper;
@@ -40,15 +35,15 @@ public class SUB_ShooterPollen extends SubsystemBase {
     private double lastPower = 0;
 
     public SUB_ShooterPollen(HardwareMap hardwareMap) {
-        motor = hardwareMap.get(DcMotorEx.class, "shooter1_motor");
+        motor = hardwareMap.get(DcMotorEx.class, "shooterPollenMotor");
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        stopper = hardwareMap.get(ServoImplEx.class, "stopper");
+
+        stopper = hardwareMap.get(ServoImplEx.class, "stopperPollenServo");
         stopper.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        stopper.setDirection(Servo.Direction.REVERSE);   // turns clockwise. Use FORWARD if backwards.
         setStopperClosed();
     }
 
@@ -62,9 +57,9 @@ public class SUB_ShooterPollen extends SubsystemBase {
 
     // ---- Shooter ----
 
-    /** Spin up to the speed in Constants.ShooterConstants.shootingPollenRPM. */
+    /** Spin up to the speed in Constants.ShooterConstants.POLLEN_TARGET_VELOCITY. */
     public void spinUp() {
-        start(Constants.ShooterConstants.shootingPollenRPM);
+        start(Constants.ShooterConstants.POLLEN_TARGET_VELOCITY);
     }
 
     public void start(double rpm) {
@@ -89,11 +84,11 @@ public class SUB_ShooterPollen extends SubsystemBase {
     // ---- Stopper ----
 
     public void setStopperClosed() {
-        stopper.setPosition(STOPPER_CLOSED);
+        stopper.setPosition(Constants.ShooterConstants.POLLEN_SERVO_INITIAL_POS);
     }
 
     public void setStopperOpen() {
-        stopper.setPosition(STOPPER_OPEN);
+        stopper.setPosition(Constants.ShooterConstants.POLLEN_SERVO_SECOND_POS);
     }
 
     public void addTelemetry(Telemetry telemetry) {
