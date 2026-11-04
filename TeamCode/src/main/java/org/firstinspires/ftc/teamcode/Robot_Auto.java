@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -35,12 +36,20 @@ public abstract class Robot_Auto extends LinearOpMode {
                   RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
           imu.initialize(new IMU.Parameters(orientationOnRobot));
 
-          waitForStart();
-
           while (!opModeIsActive() && !isStopRequested()) {
                m_robot.run(); // run the scheduler
+               telemetry.addData("ODM", "x[%3.2f] y[%3.2f] heading(%3.2f)",
+                       m_robot.drivetrain.getPoseEstimate().position.x,
+                       m_robot.drivetrain.getPoseEstimate().position.y,
+                       Math.toDegrees(m_robot.drivetrain.getPoseEstimate().heading.toDouble()));
+               telemetry.addData("Heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
                telemetry.update();
           }
+
+          waitForStart();
+
+          // Zero the IMU heading right as the auto begins (robot must be still, facing its start direction)
+          imu.resetYaw();
 
           buildTasks().schedule();
 
@@ -67,6 +76,8 @@ public abstract class Robot_Auto extends LinearOpMode {
      }
 
      public void initializeSubsystems() {
+          // Clear anything left over from a previous (or stopped-early) run
+          CommandScheduler.getInstance().reset();
           m_robot = new RobotContainer(this);
      }
 

@@ -27,13 +27,14 @@ public class Constants {
         public static final double NECTAR_TARGET_VELOCITY = 2125.0;  // flywheel RPM, keep below ~2000
         public static final double NECTAR_SERVO_DELAY_SEC = 0;
         public static final double NECTAR_SERVO_OPEN_SEC = 3.0;
-        public static final double NECTAR_SERVO_INITIAL_POS = 0.35;   // not used until Necter gets a servo
-        public static final double NECTAR_SERVO_SECOND_POS = 0.6;
+        public static final double NECTAR_SERVO_INITIAL_POS = 0.25;   // not used until Necter gets a servo
+        public static final double NECTAR_SERVO_SECOND_POS = 1;
     }
 
     public static final class IntakeConstants {
-        public static final double kIntakeOn = 0.5;
-        public static final double kIntakeAuto = 0.9;
+        public static final double kIntakeOn = 0.85;
+
+        public static final double kIntakeAuto = 0.45;
         public static final double kIntakeOff = 0;
         public static final double kIntakeReverse = -0.67;
     }
