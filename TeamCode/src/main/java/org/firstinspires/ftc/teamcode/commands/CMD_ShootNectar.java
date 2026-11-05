@@ -22,11 +22,10 @@ public class CMD_ShootNectar extends SequentialCommandGroup {
 
         addCommands(
                 // Safety: instant if already at speed, otherwise waits (up to the delay)
-                new WaitUntilCommand(p_robot.m_shooterNecter::atSpeed)
-                        .withTimeout((long) (Constants.ShooterConstants.NECTAR_SERVO_DELAY_SEC * 1000)),
+                new WaitUntilCommand(p_robot.m_shooterNecter::atSpeed),
                 new InstantCommand(() -> {
                     p_robot.m_shooterNecter.setStopperOpen();
-                    p_robot.m_intake.kIntakeOn();
+                    p_robot.m_intake.setMotorPower(Constants.IntakeConstants.kIntakeOnInAuto);
                 }),
                 new WaitCommand((long) (Constants.ShooterConstants.NECTAR_SERVO_OPEN_SEC * 1000)),
                 new InstantCommand(this::stopFeeding)

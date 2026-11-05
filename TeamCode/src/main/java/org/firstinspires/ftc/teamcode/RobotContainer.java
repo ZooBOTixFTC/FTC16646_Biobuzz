@@ -19,6 +19,8 @@ public class RobotContainer {
 
     public SUB_Intake m_intake;
 
+    public SUB_FlowPlow m_flowPlow;
+
     public GlobalVariables GlobalVariables;
 
     public RobotContainer(OpMode p_opMode) {
@@ -26,10 +28,12 @@ public class RobotContainer {
         drivetrain = new MecanumDriveSubsystem(p_opMode.hardwareMap, new Pose2d(0, 0, 0));
 
         // Motor and servo names are set at the top of each shooter file.
-        m_shooterPollen = new SUB_ShooterPollen(p_opMode.hardwareMap);
-        m_shooterNecter = new SUB_ShooterNectar(p_opMode.hardwareMap);
+        m_shooterPollen = new SUB_ShooterPollen(p_opMode);
+        m_shooterNecter = new SUB_ShooterNectar(p_opMode);
 
         m_intake = new SUB_Intake(p_opMode);
+
+        m_flowPlow = new SUB_FlowPlow(p_opMode);
     }
 
     public void run() {

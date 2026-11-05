@@ -34,7 +34,7 @@ public class RR_MecanumDriveDefault extends CommandBase {
         double strafe = STRAFE_SIGN * applyDeadband(gamepad.getLeftX());
         double turn = TURN_SIGN * applyDeadband(gamepad.getRightX());
 
-        drivetrain.drive(forward, strafe, turn);
+        drivetrain.drive(Math.pow(forward,3), Math.pow(strafe,3), Math.pow(turn,3));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RR_MecanumDriveDefault extends CommandBase {
         drivetrain.stop();
     }
 
-    private double applyDeadband(double value) {
+    private double applyDeadband(double value)  {
         return Math.abs(value) < deadband ? 0 : value;
     }
 }

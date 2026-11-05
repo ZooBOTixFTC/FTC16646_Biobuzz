@@ -28,8 +28,8 @@ public class CMD_IntakeTriggers extends CommandBase {
 
     @Override
     public void execute() {
-        double in = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        double out = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+        double in = Math.pow(gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),3);
+        double out = Math.pow(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER),3);
 
         double power = in * Constants.IntakeConstants.kIntakeOn
                 - out * Math.abs(Constants.IntakeConstants.kIntakeReverse);

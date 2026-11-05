@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Robot_Auto;
 import org.firstinspires.ftc.teamcode.commands.CMD_ShootPollen;
@@ -43,20 +44,19 @@ public class AUTO_Solo2Shot extends Robot_Auto {
         pickUpCorner = m_robot.drivetrain.getDrive()
                 .actionBuilder(new Pose2d(-12, -59, Math.toRadians(90)))
                 .splineToLinearHeading(new Pose2d(-60, -56.25, Math.toRadians(45)), Math.toRadians(135))
-                //     .lineToX(-63, new TranslationalVelConstraint(20))   // first part: slow, 5 in/s
+                .strafeTo(new Vector2d(-76, -56.25))   // stop 3: slide into the corner, stays at 45°
+                .turnTo(Math.toRadians(90))            // turn in place to face 90°
                 .build();
 
 
         // Stops 3-5: slide into the corner, turn, wait, then drive up past the hive to stop 5
         getPickUpCorner2 = m_robot.drivetrain.getDrive()
-                .actionBuilder(new Pose2d(-60, -56.25, Math.toRadians(45)))
-                .strafeTo(new Vector2d(-76, -56.25))   // stop 3: slide into the corner, stays at 45°
-                .turnTo(Math.toRadians(90))            // turn in place to face 90°
+                .actionBuilder(new Pose2d(-76, -56.25, Math.toRadians(90)))
                 .waitSeconds(1)                        // pause 1 second
                 .setTangent(Math.toRadians(0))         // start moving right, out of the corner
                 .splineToLinearHeading(new Pose2d(-50, -36, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up
                 .splineToLinearHeading(new Pose2d(-46, 0, Math.toRadians(0)), Math.toRadians(90))    // NEW: pass the hive on the left (more negative X = further from hive)
-                .splineToLinearHeading(new Pose2d(-36, 80, Math.toRadians(-50)), Math.toRadians(90))  // stop 5
+                .splineToLinearHeading(new Pose2d(-20, 83, Math.toRadians(-65)), Math.toRadians(90))  // stop 5
                 .build();
 
 
@@ -95,10 +95,10 @@ public class AUTO_Solo2Shot extends Robot_Auto {
 
 
                 // Stops 2-5: intake from the corner, then drive up to stop 5
-                new InstantCommand(() -> m_robot.m_intake.kIntakeOn()),
+                new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.8)),
                 new InstantCommand(() -> Actions.runBlocking(pickUpCorner)),
-                new InstantCommand(() -> Actions.runBlocking(getPickUpCorner2)),
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOff()),
+                new InstantCommand(() -> Actions.runBlocking(getPickUpCorner2)),
 
 
                 // Stop 5: settle, then shoot

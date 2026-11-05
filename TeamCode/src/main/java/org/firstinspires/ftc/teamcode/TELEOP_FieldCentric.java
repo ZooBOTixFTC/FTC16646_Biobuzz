@@ -75,10 +75,6 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
             telemetry.addData("end heading", GlobalVariables.m_autoEndHeading);
 
-            // Shooter PIDF readout (Driver Station + FTC Dashboard)
-            m_robot.m_shooterPollen.addTelemetry(telemetry);
-            m_robot.m_shooterNecter.addTelemetry(telemetry);
-
             // Per-wheel distance (ticks + inches), power, and velocity
             m_robot.drivetrain.addTelemetry(telemetry);
 
@@ -135,18 +131,15 @@ public class TELEOP_FieldCentric extends LinearOpMode {
         AddButtonCommand(m_driverOp, GamepadKeys.Button.RIGHT_BUMPER,
                 new InstantCommand(() -> new CMD_ShootPollen(m_robot).schedule())
         );
-
         // Driver Left Bumper: shoot ONLY Necter (top)
         AddButtonCommand(m_driverOp, GamepadKeys.Button.LEFT_BUMPER,
                 new InstantCommand(() -> new CMD_ShootNectar(m_robot).schedule())
         );
-
-        // TEMPORARY servo test: A = Pollen gate open, B = Pollen gate closed
-        AddButtonCommand(m_driverOp, GamepadKeys.Button.A,
-                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen())
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.DPAD_UP,
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud())
         );
-        AddButtonCommand(m_driverOp, GamepadKeys.Button.B,
-                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed())
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.DPAD_DOWN,
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround())
         );
     }
 
