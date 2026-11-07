@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Teleop Red Robot Centric", group = "Teleop Red")
+//@TeleOp(name = "Teleop Red Robot Centric", group = "Teleop Red")
 public class TELEOP_RobotCentric extends TELEOP_FieldCentricBlue {
     @Override
     public void setSide(){
