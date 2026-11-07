@@ -32,9 +32,12 @@ public abstract class Robot_Auto extends LinearOpMode {
           IMU imu = hardwareMap.get(IMU.class, "imu");
 
           RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-                  RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                  RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
+                  RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                  RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
           imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+          // Necter stopper holds its auto position (0.25) for the whole auto
+          m_robot.m_shooterNecter.setStopperAuto();
 
           while (!opModeIsActive() && !isStopRequested()) {
                m_robot.run(); // run the scheduler
@@ -69,6 +72,9 @@ public abstract class Robot_Auto extends LinearOpMode {
                telemetry.addData("Heading", heading);
                telemetry.update();
           }
+
+          // Auto is over: Necter stopper goes back to its normal closed position
+          m_robot.m_shooterNecter.setStopperClosed();
 
           // Save final heading for TeleOp handoff
           GlobalVariables.m_autoEndHeading = m_robot.drivetrain.getPoseEstimate().heading.toDouble();

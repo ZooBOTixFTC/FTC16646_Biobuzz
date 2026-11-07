@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Constants;
 public class SUB_ShooterNectar extends SubsystemBase {
 
     // ---- Speed control gains ----
-    private static final double kP = 40.0;
+    private static final double kP = 50.0;
     private static final double kI = 0;
     private static final double kD = 0.0;
     private static final double kF = 13.7;
@@ -92,5 +92,16 @@ public class SUB_ShooterNectar extends SubsystemBase {
 
     public void setStopperOpen() {
         stopper.setPosition(Constants.ShooterConstants.NECTAR_SERVO_SECOND_POS);
+    }
+
+    /** Position the stopper holds for the whole auto (Constants NECTAR_SERVO_AUTO_POS). */
+    public void setStopperAuto() {
+        stopper.setPosition(Constants.ShooterConstants.NECTAR_SERVO_AUTO_POS);
+    }
+
+    /** Slightly lower than closed, used while the intake is running. */
+    public void setStopperIntake() {
+        stopper.setPosition(Constants.ShooterConstants.NECTAR_SERVO_INITIAL_POS
+                - Constants.ShooterConstants.NECTAR_SERVO_INTAKE_OFFSET);
     }
 }

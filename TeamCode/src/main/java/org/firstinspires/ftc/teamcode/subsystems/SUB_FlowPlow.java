@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class SUB_FlowPlow extends SubsystemBase {
 
     // ---- Tune these ----
-    public static final double CLOUD_POS = 0.1;    // up position
-    public static final double GROUND_POS = 0.61;   // down position
+    public static final double CLOUD_POS = 0.13;    // up position
+    public static final double GROUND_POS = 0.67;   // down position //less=lower
 
     private final Servo leftServo;
     private final Servo rightServo;

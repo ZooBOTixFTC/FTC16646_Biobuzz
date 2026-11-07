@@ -32,10 +32,20 @@ public class SUB_Intake extends SubsystemBase {
         m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeOff);
     }
 
+    public void kIntakeOn2() {
+        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeOn2);
+    }
+
+
     public void kIntakeReverse() {
         m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeReverse);
     }
     public void setMotorPower(double Speed) {
         m_intakeMotor.setPower(Speed);
+    }
+
+    /** The power the motor is currently being told to run at (for telemetry). */
+    public double getPower() {
+        return m_intakeMotor.getPower();
     }
 }

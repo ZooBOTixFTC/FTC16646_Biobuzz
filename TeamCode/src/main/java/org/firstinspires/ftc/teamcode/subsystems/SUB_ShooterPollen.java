@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Constants;
 public class SUB_ShooterPollen extends SubsystemBase {
 
     // ---- Speed control gains ----
-    private static final double kP = 40.0;//1.067;
+    private static final double kP = 50.0;//1.067;
     private static final double kI = 0;//0.11;
     private static final double kD = 0.0;
     private static final double kF = 13.7;//11.7;
@@ -65,6 +65,10 @@ public class SUB_ShooterPollen extends SubsystemBase {
     /** Spin up to the speed in Constants.ShooterConstants.POLLEN_TARGET_VELOCITY. */
     public void spinUp() {
         start(Constants.ShooterConstants.POLLEN_TARGET_VELOCITY);
+    }
+
+    public void spinUp(double rpm) {
+        start(rpm);
     }
 
     public void start(double rpm) {

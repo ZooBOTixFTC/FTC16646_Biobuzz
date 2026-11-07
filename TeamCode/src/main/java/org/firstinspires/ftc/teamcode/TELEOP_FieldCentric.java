@@ -25,6 +25,7 @@ public class TELEOP_FieldCentric extends LinearOpMode {
     public RobotContainer m_robot;
     private GamepadEx m_driverOp;
     private GamepadEx m_toolOp;
+    private boolean m_plowDown = false;   // true while the FlowPlow is down (intake runs the whole time)
 
     private static final ElapsedTime m_runTime = new ElapsedTime();
 
@@ -41,8 +42,8 @@ public class TELEOP_FieldCentric extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         waitForStart();
@@ -80,6 +81,10 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
             double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             telemetry.addData("Heading", heading);
+
+            // Intake check: if "Intake power" reads 0.00 when you let go, the code stopped it
+            telemetry.addData("Intake trigger (L)", "%.2f", m_driverOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+            telemetry.addData("Intake power", "%.2f", m_robot.m_intake.getPower());
             telemetry.update();
         }
 
@@ -102,13 +107,17 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
         m_robot.drivetrain.setFieldCentric(true);
 
+        // Field-centric frame of reference: red = +90, blue = -90 (set in getFieldOffsetDegrees)
+        m_robot.drivetrain.setPoseEstimate(fieldStartPose());
+
         // Default drive command for TeleOp controls
         m_robot.drivetrain.setDefaultCommand(
                 new RR_MecanumDriveDefault(m_robot.drivetrain, m_driverOp, 0.03)
         );
 
         // Intake: left trigger = in, right trigger = out (harder press = more power)
-        m_robot.m_intake.setDefaultCommand(new CMD_IntakeTriggers(m_robot.m_intake, m_driverOp));
+        m_robot.m_intake.setDefaultCommand(new CMD_IntakeTriggers(m_robot.m_intake, m_robot.m_shooterNecter, m_driverOp,
+                () -> m_plowDown));
 
         setSide();
         GlobalVariables.m_red = m_robot.getRedSide();
@@ -117,9 +126,9 @@ public class TELEOP_FieldCentric extends LinearOpMode {
     }
 
     public void configureButtonBindings() {
-        // Operator Start: Reset field-centric pose to (0,0,0)
+        // Start: re-zero the field-centric direction (uses the alliance offset)
         AddButtonCommand(m_driverOp, GamepadKeys.Button.START,
-                new InstantCommand(() -> m_robot.drivetrain.setPoseEstimate(new Pose2d(0, 0, 0)))
+                new InstantCommand(() -> m_robot.drivetrain.setPoseEstimate(fieldStartPose()))
         );
 
         // Operator Back: zero the per-wheel distance readout
@@ -135,16 +144,35 @@ public class TELEOP_FieldCentric extends LinearOpMode {
         AddButtonCommand(m_driverOp, GamepadKeys.Button.LEFT_BUMPER,
                 new InstantCommand(() -> new CMD_ShootNectar(m_robot).schedule())
         );
+        // Dpad Up: FlowPlow goes up, the plow intake stops (triggers work as normal)
         AddButtonCommand(m_driverOp, GamepadKeys.Button.DPAD_UP,
-                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud())
+                new InstantCommand(() -> {
+                    m_plowDown = false;
+                    m_robot.m_flowPlow.FlowPlowToTheCloud();
+                })
         );
+
+        // Dpad Down: FlowPlow goes down and the intake runs the whole time at kIntakePlow (0.75)
         AddButtonCommand(m_driverOp, GamepadKeys.Button.DPAD_DOWN,
-                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround())
+                new InstantCommand(() -> {
+                    m_plowDown = true;
+                    m_robot.m_flowPlow.FlowPlowToTheGround();
+                })
         );
     }
 
     public void setSide() {
         m_robot.setRedSide();
+    }
+
+    /** Field-centric offset in degrees. Red = +90. The blue TeleOp overrides this with -90. */
+    public double getFieldOffsetDegrees() {
+        return 90;
+    }
+
+    /** Pose used when the TeleOp starts and when you press Start. */
+    private Pose2d fieldStartPose() {
+        return new Pose2d(0, 0, Math.toRadians(getFieldOffsetDegrees()));
     }
 
     public void AddButtonCommand(GamepadEx gamepad, GamepadKeys.Button button, Command command) {
