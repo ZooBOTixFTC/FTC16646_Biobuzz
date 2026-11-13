@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Robot_Auto;
 
 
-@Autonomous(name = "Blue Solo", preselectTeleOp = "Teleop Blue", group = "Auto Blue")
+@Autonomous(name = "AUTO_Solo2ShotBlue", preselectTeleOp = "Teleop Blue", group = "Auto Blue")
 public class AUTO_Solo2ShotBlue extends Robot_Auto {
 
 
@@ -50,8 +50,8 @@ public class AUTO_Solo2ShotBlue extends Robot_Auto {
                 .waitSeconds(1)                        // pause 1 second
                 .setTangent(Math.toRadians(0))         // start moving right, out of the corner
                 .splineToLinearHeading(new Pose2d(-50, -36, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up
-                .splineToLinearHeading(new Pose2d(-46, 0, Math.toRadians(0)), Math.toRadians(90))    // NEW: pass the hive on the left (more negative X = further from hive)
-                .splineToLinearHeading(new Pose2d(-20, 83, Math.toRadians(-66)), Math.toRadians(90))  // stop 5
+                .splineToLinearHeading(new Pose2d(-60, -10, Math.toRadians(0)), Math.toRadians(90))    // NEW: pass the hive on the left (more negative X = further from hive)
+                .splineToLinearHeading(new Pose2d(-35, 83, Math.toRadians(-66)), Math.toRadians(90))  // stop 5
                 .build();
 
 
@@ -70,9 +70,9 @@ public class AUTO_Solo2ShotBlue extends Robot_Auto {
 
         // Park (later): must start at stop 5 = (-36, 80) facing -50°
         park = m_robot.drivetrain.getDrive()
-                .actionBuilder(new Pose2d(-36, 80, Math.toRadians(-50)))
+                .actionBuilder(new Pose2d(-36, 83, Math.toRadians(-66)))
                 .strafeToLinearHeading(new Vector2d(-37, 30), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-68, 51), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-67, 45), Math.toRadians(90))
                 .build();
     }
 

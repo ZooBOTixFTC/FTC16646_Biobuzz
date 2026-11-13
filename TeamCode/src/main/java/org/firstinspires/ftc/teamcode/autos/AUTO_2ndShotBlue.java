@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Robot_Auto;
 
 // Blue mirror of AUTO_2ndShotRed: every X is negated (x -> -x).
 // Headings mirror as (180 - heading), so 90 deg stays 90 deg.
-@Autonomous(name = "Blue-Shoot Second", preselectTeleOp = "Teleop Blue", group = "Auto Blue")
+@Autonomous(name = "AUTO_2ndShotBlue", preselectTeleOp = "Teleop Blue", group = "Auto Blue")
 public class AUTO_2ndShotBlue extends Robot_Auto {
 
 

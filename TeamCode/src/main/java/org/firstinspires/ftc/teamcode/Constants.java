@@ -23,8 +23,8 @@ public class Constants {
         public static final double POLLEN_SERVO_INITIAL_POS = 0.29;   // closed (base) position
         public static final double POLLEN_SERVO_SECOND_POS = 0.35;    // open position (0.3 = 90 degrees of 300)
 
-        public static final double NECTAR_MIN_VELOCITY = 1975.0;     // speed between shots (0 = stops)
-        public static final double NECTAR_TARGET_VELOCITY = 1975.0;  // flywheel RPM, keep below ~2000
+        public static final double NECTAR_MIN_VELOCITY = 1925.0;     // speed between shots (0 = stops)
+        public static final double NECTAR_TARGET_VELOCITY = 1915.0;  // flywheel RPM, keep below ~2000
         public static final double NECTAR_SERVO_DELAY_SEC = 0;
         public static final double NECTAR_SERVO_OPEN_SEC = 3.0;
         public static final double NECTAR_SERVO_INITIAL_POS = 0.4;   // not used until Necter gets a servo

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
@@ -21,8 +22,11 @@ public class CMD_ShootPollen extends SequentialCommandGroup {
         addRequirements(p_robot.m_intake);
 
         addCommands(
-                // Safety: instant if already at speed, otherwise waits (up to the delay)
-                new WaitUntilCommand(p_robot.m_shooterPollen::atSpeed),
+                // Safety: instant if already at speed, otherwise waits, but never longer than 1.5 s
+                new ParallelRaceGroup(
+                        new WaitUntilCommand(p_robot.m_shooterPollen::atSpeed),
+                        new WaitCommand(1500)
+                ),
                 new InstantCommand(() -> {
                     p_robot.m_shooterPollen.setStopperOpen();
                     p_robot.m_intake.setMotorPower(Constants.IntakeConstants.kIntakeOnInAuto);

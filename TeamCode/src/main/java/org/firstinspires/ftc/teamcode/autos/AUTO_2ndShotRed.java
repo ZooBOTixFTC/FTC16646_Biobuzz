@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Robot_Auto;
 
 
-@Autonomous(name = "Red-Shoot Second", preselectTeleOp = "Teleop Red", group = "Auto Red")
+@Autonomous(name = "AUTO_2ndShotRed", preselectTeleOp = "Teleop Red", group = "Auto Red")
 public class AUTO_2ndShotRed extends Robot_Auto {
 
 

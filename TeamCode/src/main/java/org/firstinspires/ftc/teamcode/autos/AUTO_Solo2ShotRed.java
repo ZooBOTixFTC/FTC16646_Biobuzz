@@ -51,14 +51,14 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 .setTangent(Math.toRadians(0))         // start moving right, out of the corner
                 .splineToLinearHeading(new Pose2d(-50, -36, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up
                 .splineToLinearHeading(new Pose2d(-46, 0, Math.toRadians(0)), Math.toRadians(90))    // NEW: pass the hive on the left (more negative X = further from hive)
-                .splineToLinearHeading(new Pose2d(-20, 83, Math.toRadians(-66)), Math.toRadians(90))  // stop 5
+                .splineToLinearHeading(new Pose2d(-25, 83, Math.toRadians(-66)), Math.toRadians(90))  // stop 5
                 .build();
 
 
-//        getPickUpCorner2 = m_robot.drivetrain.getDrive()
-//                .actionBuilder(new Pose2d(-60, -59, Math.toRadians(45)))   // where the robot is now
-//                .strafeTo(new Vector2d(-69, -59))                          // 9" in -X, stays at 45°
-//                .build();
+        getPickUpCorner2 = m_robot.drivetrain.getDrive()
+                .actionBuilder(new Pose2d(-60, -59, Math.toRadians(45)))   // where the robot is now
+              .strafeTo(new Vector2d(-69, -59))                          // 9" in -X, stays at 45°
+               .build();
 
         // Old path, no longer used: it starts at (-67, -59), so running it after stop 5
         // pulls the robot back down the field.
@@ -72,7 +72,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         park = m_robot.drivetrain.getDrive()
                 .actionBuilder(new Pose2d(-36, 80, Math.toRadians(-50)))
                 .strafeToLinearHeading(new Vector2d(-37, 30), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-68, 51), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-60, 54), Math.toRadians(90))
                 .build();
     }
 
