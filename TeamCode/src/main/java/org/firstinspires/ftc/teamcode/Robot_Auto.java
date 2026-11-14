@@ -37,7 +37,7 @@ public abstract class Robot_Auto extends LinearOpMode {
           imu.initialize(new IMU.Parameters(orientationOnRobot));
 
           // Necter stopper holds its auto position (0.25) for the whole auto
-          m_robot.m_shooterNecter.setStopperAuto();
+          m_robot.m_shooterNecter.setStopperClosed();
 
           while (!opModeIsActive() && !isStopRequested()) {
                m_robot.run(); // run the scheduler

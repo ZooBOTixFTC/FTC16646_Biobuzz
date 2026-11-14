@@ -18,7 +18,7 @@ public class Constants {
         // --- Pollen & Nectar Constants ---
         public static final double POLLEN_MIN_VELOCITY = 2100;     // speed between shots (0 = stops)
         public static final double POLLEN_TARGET_VELOCITY = 2250;  // flywheel RPM, keep below ~2000
-        public static final double POLLEN_SERVO_DELAY_SEC = 0;     // longest wait for the wheel to reach speed
+        public static final double POLLEN_SERVO_DELAY_SEC = 1.5;     // longest wait for the wheel to reach speed
         public static final double POLLEN_SERVO_OPEN_SEC = 3.0;      // how long the servo is open and the intake feeds
         public static final double POLLEN_SERVO_INITIAL_POS = 0.29;   // closed (base) position
         public static final double POLLEN_SERVO_SECOND_POS = 0.35;    // open position (0.3 = 90 degrees of 300)
@@ -42,6 +42,21 @@ public class Constants {
         public static final double kIntakeReverse = -0.7;
         public static final double kIntakeOnInAuto = 0.4;
         public static final double kIntakePlow = 0.75;   // intake speed the whole time the FlowPlow is down
+    }
+
+    public static final class VisionConstants {
+        // The hive is a tag cluster. Names start with R/B for alliance (e.g. "RED SCORING"); the
+        // cluster whose name contains this word (upper case) is the one we aim at.
+        public static final String kHiveClusterKeyword = "SCORING";
+
+        public static final double kAimKP = 0.02;           // turn power per degree of bearing error
+        public static final double kAimMaxTurn = 0.5;       // turn power cap
+        public static final double kAimMinTurn = 0.08;      // smallest turn power that still moves the robot
+        public static final double kAimToleranceDeg = 1.5;  // "lined up" if error is under this
+        public static final double kAimSettleMs = 100;      // must stay lined up this long before shooting
+        public static final double kAimTimeoutMs = 1500;    // give up aiming (and shoot anyway) after this
+        public static final double kAimOffsetDeg = 0;       // + if the shooter points to the right of the camera
+        public static final double kAimTurnSign = -1;       // flip to +1 if the robot turns away from the hive
     }
 
     public static final class TransferConstants {

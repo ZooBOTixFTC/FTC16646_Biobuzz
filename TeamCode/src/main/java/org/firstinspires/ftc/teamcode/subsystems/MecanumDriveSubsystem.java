@@ -25,6 +25,16 @@ public class MecanumDriveSubsystem extends SubsystemBase {
 
     private final MecanumDrive drive;
     private boolean fieldCentric = false;
+    private Double turnOverride = null;   // null = driver controls turning
+
+    /** While set, drive() uses this turn power (clockwise positive) instead of the driver's. */
+    public void setTurnOverride(Double turn) {
+        turnOverride = turn;
+    }
+
+    public void clearTurnOverride() {
+        turnOverride = null;
+    }
 
     // Encoder positions at the last resetDistance(), used as the "zero" for distance traveled
     private int lfStart, lbStart, rbStart, rfStart;
@@ -53,6 +63,11 @@ public class MecanumDriveSubsystem extends SubsystemBase {
      * @param turn    positive = turn clockwise (right)
      */
     public void drive(double forward, double strafe, double turn) {
+        // An active turn override (e.g. auto-aim) replaces the driver's turn input
+        if (turnOverride != null) {
+            turn = turnOverride;
+        }
+
         // Road Runner frame: +x forward, +y LEFT, +heading counterclockwise
         Vector2d input = new Vector2d(forward, -strafe);
 

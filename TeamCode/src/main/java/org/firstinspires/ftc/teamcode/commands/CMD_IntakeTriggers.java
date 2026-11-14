@@ -60,7 +60,7 @@ public class CMD_IntakeTriggers extends CommandBase {
         boolean intaking = applied > 0;
         if (intaking != stopperLowered) {
             if (intaking) {
-                nectar.setStopperIntake();
+                nectar.setStopperClosed();
             } else {
                 nectar.setStopperClosed();
             }

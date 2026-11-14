@@ -23,10 +23,7 @@ public class CMD_ShootPollen extends SequentialCommandGroup {
 
         addCommands(
                 // Safety: instant if already at speed, otherwise waits, but never longer than 1.5 s
-                new ParallelRaceGroup(
-                        new WaitUntilCommand(p_robot.m_shooterPollen::atSpeed),
-                        new WaitCommand(1500)
-                ),
+                new WaitUntilCommand(p_robot.m_shooterPollen::atSpeed).withTimeout(1500),
                 new InstantCommand(() -> {
                     p_robot.m_shooterPollen.setStopperOpen();
                     p_robot.m_intake.setMotorPower(Constants.IntakeConstants.kIntakeOnInAuto);

@@ -24,16 +24,16 @@ public class SUB_FlowPlow extends SubsystemBase {
     // ---- Tune these ----
     // Up is the hard-set zero. Down must always be a POSITIVE number.
     // "public static" (not final) so Dashboard can change them.
-    public static double CLOUD_POS = 0.0;    // up position (hard set to 0)
+    public static double CLOUD_POS = 0.15;    // up position (hard set to 0)
     public static double GROUND_POS = 0.5;   // down position (positive) - set this to your real down angle
 
     // How far the servo moves each loop. Smaller = slower and gentler.
     // About 0.005 takes roughly 2 to 4 seconds to go from 0 to 0.5 at normal loop speed.
-    public static double MAX_STEP = 0.005;
+    public static double MAX_STEP = 0.1;
 
     private final Servo servo;
     private double target = CLOUD_POS;
-    private double current = CLOUD_POS;
+    private double current   = CLOUD_POS;
 
     public SUB_FlowPlow(OpMode opMode) {
         servo = opMode.hardwareMap.get(Servo.class, "flowPlowServo");

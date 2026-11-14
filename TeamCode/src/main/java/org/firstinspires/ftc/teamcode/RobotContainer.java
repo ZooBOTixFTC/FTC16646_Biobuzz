@@ -21,6 +21,8 @@ public class RobotContainer {
 
     public SUB_FlowPlow m_flowPlow;
 
+    public SUB_Vision m_vision;
+
     public GlobalVariables GlobalVariables;
 
     public RobotContainer(OpMode p_opMode) {
@@ -34,6 +36,9 @@ public class RobotContainer {
         m_intake = new SUB_Intake(p_opMode);
 
         m_flowPlow = new SUB_FlowPlow(p_opMode);
+
+        // Starts the AprilTag camera and its Driver Station stream as soon as the container is built.
+        m_vision = new SUB_Vision(p_opMode);
     }
 
     public void run() {

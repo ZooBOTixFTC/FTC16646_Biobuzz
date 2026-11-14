@@ -7,6 +7,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -17,6 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Constants.VisionConstants;
 import org.firstinspires.ftc.teamcode.commands.*;
 
 @TeleOp(name = "Teleop Red", group = "Teleop Red")
@@ -137,13 +140,10 @@ public class TELEOP_FieldCentric extends LinearOpMode {
         );
 
         // Driver Right Bumper: shoot ONLY Pollen (bottom)
-        AddButtonCommand(m_driverOp, GamepadKeys.Button.RIGHT_BUMPER,
-                new InstantCommand(() -> new CMD_ShootPollen(m_robot).schedule())
-        );
-        // Driver Left Bumper: shoot ONLY Necter (top)
-        AddButtonCommand(m_driverOp, GamepadKeys.Button.LEFT_BUMPER,
-                new InstantCommand(() -> new CMD_ShootNectar(m_robot).schedule())
-        );
+        // (hold = keep aiming at the hive; the shot fires once lined up)
+        AddAimAndShootBinding(GamepadKeys.Button.RIGHT_BUMPER, () -> new CMD_ShootPollen(m_robot));
+        // Driver Left Bumper: shoot ONLY Necter (top), same hold-to-aim behavior
+        AddAimAndShootBinding(GamepadKeys.Button.LEFT_BUMPER, () -> new CMD_ShootNectar(m_robot));
         // Dpad Up: FlowPlow goes up, the plow intake stops (triggers work as normal)
         AddButtonCommand(m_driverOp, GamepadKeys.Button.DPAD_UP,
                 new InstantCommand(() -> {
@@ -159,6 +159,26 @@ public class TELEOP_FieldCentric extends LinearOpMode {
                     m_robot.m_flowPlow.FlowPlowToTheGround();
                 })
         );
+    }
+
+    /**
+     * While the button is held, keeps aiming at our alliance's hive (overriding only the driver's
+     * turn). The shot fires once, as soon as the robot is lined up (or after kAimTimeoutMs if the
+     * hive can't be seen). Releasing the button stops the aiming, and cancels the shot if it
+     * hasn't started yet.
+     */
+    private void AddAimAndShootBinding(GamepadKeys.Button button, java.util.function.Supplier<Command> shot) {
+        CMD_AimAtHive aim = new CMD_AimAtHive(m_robot);
+        Command waitThenShoot = new SequentialCommandGroup(
+                new WaitUntilCommand(aim::isAligned)
+                        .withTimeout((long) VisionConstants.kAimTimeoutMs),
+                new InstantCommand(() -> shot.get().schedule())
+        );
+
+        new GamepadButton(m_driverOp, button)
+                .whileHeld(aim)
+                .whenPressed(waitThenShoot)
+                .whenReleased(new InstantCommand(waitThenShoot::cancel));
     }
 
     public void setSide() {
