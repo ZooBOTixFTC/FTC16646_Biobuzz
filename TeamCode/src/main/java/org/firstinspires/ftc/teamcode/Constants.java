@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Vector2d;
 
 public class Constants {
@@ -44,19 +45,21 @@ public class Constants {
         public static final double kIntakePlow = 0.75;   // intake speed the whole time the FlowPlow is down
     }
 
+    @Config     // shows these on FTC Dashboard so they can be changed live
     public static final class VisionConstants {
         // The hive is a tag cluster. Names start with R/B for alliance (e.g. "RED SCORING"); the
         // cluster whose name contains this word (upper case) is the one we aim at.
         public static final String kHiveClusterKeyword = "SCORING";
 
-        public static final double kAimKP = 0.02;           // turn power per degree of bearing error
-        public static final double kAimMaxTurn = 0.5;       // turn power cap
-        public static final double kAimMinTurn = 0.08;      // smallest turn power that still moves the robot
-        public static final double kAimToleranceDeg = 1.5;  // "lined up" if error is under this
-        public static final double kAimSettleMs = 100;      // must stay lined up this long before shooting
-        public static final double kAimTimeoutMs = 1500;    // give up aiming (and shoot anyway) after this
-        public static final double kAimOffsetDeg = 0;       // + if the shooter points to the right of the camera
-        public static final double kAimTurnSign = -1;       // flip to +1 if the robot turns away from the hive
+        // "public static" (not final) so Dashboard can change them
+        public static double kAimKP = 0.02;           // turn power per degree of bearing error
+        public static double kAimMaxTurn = 0.5;       // turn power cap
+        public static double kAimMinTurn = 0.08;      // smallest turn power that still moves the robot
+        public static double kAimToleranceDeg = 1.5;  // "lined up" if error is under this
+        public static double kAimSettleMs = 100;      // must stay lined up this long before shooting
+        public static double kAimTimeoutMs = 1500;    // give up aiming (and shoot anyway) after this
+        public static double kAimOffsetDeg = 0;       // + if the shooter points to the right of the camera
+        public static double kAimTurnSign = -1;       // flip to +1 if the robot turns away from the hive
     }
 
     public static final class TransferConstants {
