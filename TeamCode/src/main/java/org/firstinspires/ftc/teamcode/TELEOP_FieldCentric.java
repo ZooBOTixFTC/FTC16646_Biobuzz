@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
@@ -144,6 +145,10 @@ public class TELEOP_FieldCentric extends LinearOpMode {
         AddAimAndShootBinding(GamepadKeys.Button.RIGHT_BUMPER, () -> new CMD_ShootPollen(m_robot));
         // Driver Left Bumper: shoot ONLY Necter (top), same hold-to-aim behavior
         AddAimAndShootBinding(GamepadKeys.Button.LEFT_BUMPER, () -> new CMD_ShootNectar(m_robot));
+
+        // Driver Y: backup shot, pollen straight away with NO aiming (Task 4.6).
+        // Use it if the camera can't see the hive (unplugged, glare, bad angle).
+        AddButtonCommand(m_driverOp, GamepadKeys.Button.Y, new CMD_ShootPollen(m_robot));
         // Dpad Up: FlowPlow goes up, the plow intake stops (triggers work as normal)
         AddButtonCommand(m_driverOp, GamepadKeys.Button.DPAD_UP,
                 new InstantCommand(() -> {
@@ -163,16 +168,22 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
     /**
      * While the button is held, keeps aiming at our alliance's hive (overriding only the driver's
-     * turn). The shot fires once, as soon as the robot is lined up (or after kAimTimeoutMs if the
-     * hive can't be seen). Releasing the button stops the aiming, and cancels the shot if it
-     * hasn't started yet.
+     * turn). Shoots once, as soon as the robot is lined up. If it isn't lined up after
+     * kAimTimeoutMs, the gamepad buzzes, but it keeps trying: it never shoots blind (Task 4.5).
+     * Releasing the button stops the aiming, and cancels the shot if it hasn't started yet.
      */
     private void AddAimAndShootBinding(GamepadKeys.Button button, java.util.function.Supplier<Command> shot) {
         CMD_AimAtHive aim = new CMD_AimAtHive(m_robot);
         Command waitThenShoot = new SequentialCommandGroup(
                 new WaitUntilCommand(aim::isAligned)
                         .withTimeout((long) VisionConstants.kAimTimeoutMs),
-                new InstantCommand(() -> shot.get().schedule())
+                new ConditionalCommand(
+                        new InstantCommand(() -> shot.get().schedule()),                // lined up: shoot
+                        new SequentialCommandGroup(                                     // not yet:
+                                new InstantCommand(() -> m_driverOp.gamepad.rumble(300)),   // buzz the driver
+                                new WaitUntilCommand(aim::isAligned),                   // keep waiting, no blind shot
+                                new InstantCommand(() -> shot.get().schedule())),
+                        aim::isAligned)
         );
 
         new GamepadButton(m_driverOp, button)

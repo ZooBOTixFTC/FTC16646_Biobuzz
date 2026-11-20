@@ -25,11 +25,11 @@ public class SUB_Intake extends SubsystemBase {
     }
 
     public void kIntakeOn() {
-//        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeOn);
+        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeOn);
     }
 
     public void kIntakeOff() {
-//        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeOff);
+        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeOff);
     }
 
     public void kIntakeOn2() {
@@ -38,10 +38,10 @@ public class SUB_Intake extends SubsystemBase {
 
 
     public void kIntakeReverse() {
-//        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeReverse);
+        m_intakeMotor.setPower(Constants.IntakeConstants.kIntakeReverse);
     }
     public void setMotorPower(double Speed) {
-//        m_intakeMotor.setPower(Speed);
+        m_intakeMotor.setPower(Speed);
     }
 
     /** The power the motor is currently being told to run at (for telemetry). */

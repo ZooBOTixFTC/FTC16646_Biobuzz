@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -22,7 +23,14 @@ import java.util.List;
  * the Driver Station (3-dot menu -> Camera Stream) and on FTC Dashboard (http://192.168.43.1:8080/dash)
  * before the match starts. Call close() when finished to release the camera.
  */
+@Config     // MAX_ROLL_DEG shows on FTC Dashboard
 public class SUB_Vision extends SubsystemBase {
+
+    /**
+     * A cluster tipped further than this is treated as upside down and ignored (Task 4.4).
+     * Upright tags read roll near 0; a tipped-over hive's tags read near 180.
+     */
+    public static double MAX_ROLL_DEG = 90;
 
     /** Must match the webcam's name in the robot configuration. */
     private static final String CAMERA_NAME = "apriltag_cam";
@@ -78,17 +86,22 @@ public class SUB_Vision extends SubsystemBase {
     }
 
     /**
-     * The hive cluster for the given alliance, or null if it isn't visible. The other alliance's
-     * clusters are never returned. Cluster names start with "R" or "B" (e.g. "RED SCORING"),
-     * and the name must contain Constants.VisionConstants.kHiveClusterKeyword.
+     * Our alliance's hive cluster, RIGHT SIDE UP, or null if there isn't one in view (Task 4.4).
+     * - The name must start with the whole word "RED" or "BLUE" (not just R or B), so the other
+     *   alliance's clusters are never returned.
+     * - The name must contain Constants.VisionConstants.kHiveClusterKeyword (e.g. "SCORING").
+     * - The cluster must be right side up (|roll| < MAX_ROLL_DEG). A tipped hive's tags are
+     *   upside down, and we don't aim at those.
      */
     public AprilTagClusterDetection getHiveCluster(boolean red) {
-        String alliancePrefix = red ? "R" : "B";
+        String alliance = red ? "RED" : "BLUE";
         for (AprilTagClusterDetection c : getClusterDetections()) {
             if (c.metadata == null || c.ftcPose == null) continue;
             String name = c.metadata.name.toUpperCase();
-            if (name.startsWith(alliancePrefix)
-                    && name.contains(Constants.VisionConstants.kHiveClusterKeyword)) {
+            boolean ours = name.startsWith(alliance)
+                    && name.contains(Constants.VisionConstants.kHiveClusterKeyword);
+            boolean rightSideUp = Math.abs(c.ftcPose.roll) < MAX_ROLL_DEG;
+            if (ours && rightSideUp) {
                 return c;
             }
         }
@@ -133,10 +146,17 @@ public class SUB_Vision extends SubsystemBase {
                 }
             } else if (d instanceof AprilTagClusterDetection) {
                 AprilTagClusterDetection cluster = (AprilTagClusterDetection) d;
-                m_OpMode.telemetry.addData("Cluster " + cluster.metadata.name,
-                        "%d%% found, bearing %.1f deg",
-                        cluster.percentClusterFound,
-                        cluster.ftcPose != null ? cluster.ftcPose.bearing : Double.NaN);
+                String name = cluster.metadata != null ? cluster.metadata.name : "unknown";
+                if (cluster.ftcPose != null) {
+                    // roll near 0 = upright, near 180 = upside down (tipped hive)
+                    m_OpMode.telemetry.addData("Cluster " + name,
+                            "%d%% found, bearing %.1f deg, roll %.0f deg, range %.0f in",
+                            cluster.percentClusterFound,
+                            cluster.ftcPose.bearing, cluster.ftcPose.roll, cluster.ftcPose.range);
+                } else {
+                    m_OpMode.telemetry.addData("Cluster " + name, "%d%% found, no position",
+                            cluster.percentClusterFound);
+                }
             }
         }
     }
