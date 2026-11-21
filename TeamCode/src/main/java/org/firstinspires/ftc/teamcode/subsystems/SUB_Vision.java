@@ -99,7 +99,7 @@ public class SUB_Vision extends SubsystemBase {
             if (c.metadata == null || c.ftcPose == null) continue;
             String name = c.metadata.name.toUpperCase();
             boolean ours = name.startsWith(alliance)
-                    && name.contains(Constants.VisionConstants.kHiveClusterKeyword);
+                    && (name.contains("SCORING") || name.contains("AUDIENCE"));
             boolean rightSideUp = Math.abs(c.ftcPose.roll) < MAX_ROLL_DEG;
             if (ours && rightSideUp) {
                 return c;

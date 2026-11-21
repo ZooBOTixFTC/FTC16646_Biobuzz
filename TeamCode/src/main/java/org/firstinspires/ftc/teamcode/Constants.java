@@ -50,6 +50,7 @@ public class Constants {
         // The hive is a tag cluster. Names start with R/B for alliance (e.g. "RED SCORING"); the
         // cluster whose name contains this word (upper case) is the one we aim at.
         public static final String kHiveClusterKeyword = "SCORING";
+        public static final String kHiveClusterKeyword2 = "AUDIENCE";
 
         // "public static" (not final) so Dashboard can change them
         public static double kAimKP = 0.02;           // turn power per degree of bearing error
