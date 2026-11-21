@@ -6,6 +6,8 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * AprilTag detection with a live camera stream.
@@ -22,8 +25,12 @@ import java.util.List;
  * Constructing this subsystem (e.g. during init) starts the camera, so the stream is available on
  * the Driver Station (3-dot menu -> Camera Stream) and on FTC Dashboard (http://192.168.43.1:8080/dash)
  * before the match starts. Call close() when finished to release the camera.
+ *
+ * Camera settings (exposure, gain, decimation) are tunable live from FTC Dashboard. They are applied
+ * by updateCameraSettings(), which periodic() calls. periodic() does NOT run during init in a
+ * CommandOpMode, so call updateCameraSettings() from your init loop if you want to tune before start.
  */
-@Config     // MAX_ROLL_DEG shows on FTC Dashboard
+@Config     // these public static fields show on FTC Dashboard
 public class SUB_Vision extends SubsystemBase {
 
     /**
@@ -32,6 +39,15 @@ public class SUB_Vision extends SubsystemBase {
      */
     public static double MAX_ROLL_DEG = 90;
 
+    /** true = use EXPOSURE_MS / GAIN below. false = camera's own auto exposure. */
+    public static boolean MANUAL_EXPOSURE = true;
+    /** Exposure time in ms. Lower = less motion blur but darker image. Start around 5-6. */
+    public static int EXPOSURE_MS = 25;
+    /** Brightens the image after lowering exposure. Range is camera-specific (often 0-255). */
+    public static int GAIN = 150;
+    /** AprilTag decimation: 1 = detects farthest but slowest, 2 = balanced, 3 = fast but short range. */
+    public static double DECIMATION = 2;
+
     /** Must match the webcam's name in the robot configuration. */
     private static final String CAMERA_NAME = "apriltag_cam";
     private static final int STREAM_FPS = 15;
@@ -39,6 +55,12 @@ public class SUB_Vision extends SubsystemBase {
     private final OpMode m_OpMode;
     private final AprilTagProcessor m_aprilTag;
     private final VisionPortal m_portal;
+
+    // Last values actually sent to the camera, so we only re-send when something changes.
+    private Boolean m_appliedManual = null;
+    private int m_appliedExposureMs = -1;
+    private int m_appliedGain = -1;
+    private double m_appliedDecimation = -1;
 
     public SUB_Vision(OpMode p_OpMode) {
         m_OpMode = p_OpMode;
@@ -59,6 +81,53 @@ public class SUB_Vision extends SubsystemBase {
 
         // Also stream to FTC Dashboard (already a project dependency).
         FtcDashboard.getInstance().startCameraStream(m_portal, STREAM_FPS);
+    }
+
+    /**
+     * Sends exposure/gain/decimation to the camera if they changed. Safe to call every loop.
+     * Camera controls only work once the camera is STREAMING, so this quietly does nothing until then.
+     */
+    public void updateCameraSettings() {
+        if (DECIMATION != m_appliedDecimation) {
+            m_aprilTag.setDecimation((float) DECIMATION);
+            m_appliedDecimation = DECIMATION;
+        }
+
+        if (m_portal.getCameraState() != VisionPortal.CameraState.STREAMING) return;
+
+        boolean changed = !Boolean.valueOf(MANUAL_EXPOSURE).equals(m_appliedManual)
+                || EXPOSURE_MS != m_appliedExposureMs
+                || GAIN != m_appliedGain;
+        if (!changed) return;
+
+        ExposureControl exposure = m_portal.getCameraControl(ExposureControl.class);
+        GainControl gain = m_portal.getCameraControl(GainControl.class);
+        if (exposure == null) return;
+
+        if (!MANUAL_EXPOSURE) {
+            exposure.setMode(ExposureControl.Mode.Auto);
+        } else {
+            if (exposure.getMode() != ExposureControl.Mode.Manual) {
+                // Switch modes this loop; set the values on the next call (avoids sleeping here).
+                exposure.setMode(ExposureControl.Mode.Manual);
+                return;
+            }
+            long minExp = exposure.getMinExposure(TimeUnit.MILLISECONDS) + 1;
+            long maxExp = exposure.getMaxExposure(TimeUnit.MILLISECONDS);
+            exposure.setExposure(clamp(EXPOSURE_MS, minExp, maxExp), TimeUnit.MILLISECONDS);
+
+            if (gain != null) {
+                gain.setGain((int) clamp(GAIN, gain.getMinGain(), gain.getMaxGain()));
+            }
+        }
+
+        m_appliedManual = MANUAL_EXPOSURE;
+        m_appliedExposureMs = EXPOSURE_MS;
+        m_appliedGain = GAIN;
+    }
+
+    private static long clamp(long v, long lo, long hi) {
+        return Math.max(lo, Math.min(hi, v));
     }
 
     /** All tags currently seen (empty list if none). */
@@ -133,6 +202,12 @@ public class SUB_Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        updateCameraSettings();
+
+        m_OpMode.telemetry.addData("Camera", "%s, exposure %s, gain %d, decimation %.0f",
+                m_portal.getCameraState(),
+                MANUAL_EXPOSURE ? EXPOSURE_MS + " ms" : "auto", GAIN, DECIMATION);
+
         m_OpMode.telemetry.addData("Vision tags", getDetections().size());
         for (AprilTagDetection d : getDetections()) {
             if (d instanceof AprilTagSingleDetection) {

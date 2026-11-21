@@ -50,15 +50,16 @@ public class TELEOP_FieldCentric extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
+        while (!opModeIsActive() && !isStopRequested()) {
+            m_robot.m_vision.updateCameraSettings();
+            telemetry.update();
+        }
+
         waitForStart();
 
         // Shooters spin the whole time. Shooting only opens the gate and runs the intake.
         m_robot.m_shooterPollen.spinUp();
         m_robot.m_shooterNecter.spinUp();
-
-        while (!opModeIsActive() && !isStopRequested()) {
-            telemetry.update();
-        }
 
         m_runTime.reset();
         while (!isStopRequested() && opModeIsActive()) {
@@ -142,9 +143,10 @@ public class TELEOP_FieldCentric extends LinearOpMode {
 
         // Driver Right Bumper: shoot ONLY Pollen (bottom)
         // (hold = keep aiming at the hive; the shot fires once lined up)
-        AddAimAndShootBinding(GamepadKeys.Button.RIGHT_BUMPER, () -> new CMD_ShootPollen(m_robot));
+        AddAimAndShootPollen(GamepadKeys.Button.RIGHT_BUMPER);
+
         // Driver Left Bumper: shoot ONLY Necter (top), same hold-to-aim behavior
-        AddAimAndShootBinding(GamepadKeys.Button.LEFT_BUMPER, () -> new CMD_ShootNectar(m_robot));
+        AddAimAndShootNectar(GamepadKeys.Button.LEFT_BUMPER);
 
         // Driver Y: backup shot, pollen straight away with NO aiming (Task 4.6).
         // Use it if the camera can't see the hive (unplugged, glare, bad angle).
@@ -172,18 +174,24 @@ public class TELEOP_FieldCentric extends LinearOpMode {
      * kAimTimeoutMs, the gamepad buzzes, but it keeps trying: it never shoots blind (Task 4.5).
      * Releasing the button stops the aiming, and cancels the shot if it hasn't started yet.
      */
-    private void AddAimAndShootBinding(GamepadKeys.Button button, java.util.function.Supplier<Command> shot) {
+    private void AddAimAndShootPollen(GamepadKeys.Button button) {
         CMD_AimAtHive aim = new CMD_AimAtHive(m_robot);
         Command waitThenShoot = new SequentialCommandGroup(
-                new WaitUntilCommand(aim::isAligned)
-                        .withTimeout((long) VisionConstants.kAimTimeoutMs),
-                new ConditionalCommand(
-                        new InstantCommand(() -> shot.get().schedule()),                // lined up: shoot
-                        new SequentialCommandGroup(                                     // not yet:
-                                new InstantCommand(() -> m_driverOp.gamepad.rumble(300)),   // buzz the driver
-                                new WaitUntilCommand(aim::isAligned),                   // keep waiting, no blind shot
-                                new InstantCommand(() -> shot.get().schedule())),
-                        aim::isAligned)
+                new WaitUntilCommand(aim::isAligned).withTimeout(1500),
+                new CMD_ShootPollen(m_robot)
+        );
+
+        new GamepadButton(m_driverOp, button)
+                .whileHeld(aim)
+                .whenPressed(waitThenShoot)
+                .whenReleased(new InstantCommand(waitThenShoot::cancel));
+    }
+
+    private void AddAimAndShootNectar(GamepadKeys.Button button) {
+        CMD_AimAtHive aim = new CMD_AimAtHive(m_robot);
+        Command waitThenShoot = new SequentialCommandGroup(
+                new WaitUntilCommand(aim::isAligned).withTimeout(1500),
+                new CMD_ShootNectar(m_robot)
         );
 
         new GamepadButton(m_driverOp, button)
