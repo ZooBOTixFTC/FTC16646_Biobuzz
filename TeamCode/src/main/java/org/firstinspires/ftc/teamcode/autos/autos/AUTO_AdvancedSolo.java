@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Robot_Auto;
 @Autonomous(name = "AUTO_Advanced", preselectTeleOp = "Teleop Red", group = "Auto Red")
 public class AUTO_AdvancedSolo extends Robot_Auto {
 
-    private Action moveForward, getFlower1, shootLoad2, ShootLoad2NoTip, getGetFlower2, ShootLoad3,x park;
+    private Action moveForward, getFlower1, shootLoad2, ShootLoad2NoTip, getGetFlower2, ShootLoad3, park;
 
     @Override
     public SequentialCommandGroup buildTasks() {
