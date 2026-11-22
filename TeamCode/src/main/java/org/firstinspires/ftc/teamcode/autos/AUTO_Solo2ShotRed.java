@@ -86,8 +86,8 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         // Park (later): must start where the flower path ends = (SHOT2_X, FLOWER_Y) facing -90°
         park = m_robot.drivetrain.getDrive()
                 .actionBuilder(new Pose2d(-55, 85, Math.toRadians(-66)))
-//                .strafeToLinearHeading(new Vector2d(-37, 30), Math.toRadians(90))
-//                .strafeToLinearHeading(new Vector2d(-60, 54), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-37, 30), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-60, 54), Math.toRadians(90))
                 .build();
     }
 
@@ -146,10 +146,10 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
 
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
                 new InstantCommand(() -> Actions.runBlocking(intakeFLower)),
-                lap("At the flower"),
-                // Park (later)
-                new InstantCommand(() -> Actions.runBlocking(park)),
-                lap("Done")
+                lap("At the flower")
+
+//                new InstantCommand(() -> Actions.runBlocking(park)),
+//                lap("Done")
         );
     }
 }
