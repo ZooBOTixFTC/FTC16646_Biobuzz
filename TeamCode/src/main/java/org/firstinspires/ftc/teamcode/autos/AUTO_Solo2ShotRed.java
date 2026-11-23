@@ -146,7 +146,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 lap("Shot 2 done"),
 
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
-                run(intakeFLower)
+                run(intakeFLower),
                 lap("At the flower")
 
 //                new InstantCommand(() -> Actions.runBlocking(park)),
