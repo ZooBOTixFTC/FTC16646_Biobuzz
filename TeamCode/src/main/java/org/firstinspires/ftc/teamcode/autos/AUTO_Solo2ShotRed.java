@@ -27,9 +27,11 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double SHOT2_X = -42.5;
     public static double SHOT2_Y = 75;
 
+    public static double HIVE_PASS_X = -72;
+
     public static double SHOT2_HEADING = -80;    // degrees
     // Flower: how far it backs up into the flower (a y number)
-    public static double FLOWER_Y = 78;
+    public static double FLOWER_Y = 82;
 
     // ---- Time savers: if one causes problems, put back the old value shown ----
     public static int SHOT2_FEED_MS = 3500;      // how long shot 2 feeds          (was 3500)
@@ -71,8 +73,8 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 .actionBuilder(new Pose2d(-81, -56.25, Math.toRadians(90)))
                 .waitSeconds(CORNER_PAUSE_SEC)         // let the garden pollen in
                 .setTangent(Math.toRadians(90))         // start moving out of the corner
-                .splineToSplineHeading(new Pose2d(-60, -20, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up
-                .splineToSplineHeading(new Pose2d(-60, 40, Math.toRadians(0)), Math.toRadians(90))    // pass the hive on the left (more negative X = further from hive)
+                .splineToSplineHeading(new Pose2d(HIVE_PASS_X, -20, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up
+                .splineToSplineHeading(new Pose2d(HIVE_PASS_X, 40, Math.toRadians(0)), Math.toRadians(90))    // pass the hive on the left (more negative X = further from hive)
                 .splineToSplineHeading(shot2Spot(), Math.toRadians(90))  // stop 5
                 .build();
 
