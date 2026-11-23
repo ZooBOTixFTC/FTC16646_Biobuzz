@@ -40,7 +40,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static int SHOT2_SETTLE_MS = 400;     // settle before shot 2           (was 400)
 
 
-    private Action moveForward, shoot, pickUpCorner, getPickUpCorner2, intakeFLower, park;
+    private Action moveForward, shoot, pickUpCorner, getPickUpCorner2, intakeFLower, backToShot, park;
 
     // Lap times: shown in the Driver Station log, so you can see where the time goes
     private final ElapsedTime m_clock = new ElapsedTime();
@@ -84,6 +84,12 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 .actionBuilder(shot2Spot())
                 .turnTo(Math.toRadians(-90))
                 .lineToY(FLOWER_Y)
+                .build();
+
+        backToShot = m_robot.drivetrain.getDrive()
+                .actionBuilder(flowerSideFlowerSpot())
+                .lineToY(SHOT2_Y)
+                .turnTo(Math.toRadians(SHOT2_HEADING))
                 .build();
 
         // Park (later): must start where the flower path ends = (SHOT2_X, FLOWER_Y) facing -90°
@@ -159,12 +165,19 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOff()),
                 run(getPickUpCorner2),
                 lap("At shot 2"),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
                 shootPollen(),
                 lap("Shot 2 done"),
 
-                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
                 run(intakeFLower),
-                lap("At the flower")
+                lap("At the flower"),
+                new WaitCommand(500),
+                lap("Shooting load three"),
+                run(backToShot),
+                shootPollen(),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud())
+
+
 
 //                new InstantCommand(() -> Actions.runBlocking(park)),
 //                lap("Done")
