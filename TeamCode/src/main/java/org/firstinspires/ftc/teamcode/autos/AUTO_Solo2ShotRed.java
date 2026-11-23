@@ -133,7 +133,9 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     private Pose2d shot2Spot() {
         return new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING));
     }
-
+    private Pose2d flowerSideFlowerSpot() {
+        return new Pose2d(SHOT2_X, FLOWER_Y, Math.toRadians(-90));
+    }
     @Override
     public SequentialCommandGroup buildTasks() {
         m_clock.reset();    // buildTasks() runs right after START, so this is time 0
