@@ -98,18 +98,8 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     private InstantCommand run(Action path) {
         return new InstantCommand(() -> Actions.runBlocking(path));
     }
-    @Override
-    public SequentialCommandGroup buildTasks() {
-        m_clock.reset();    // buildTasks() runs right after START, so this is time 0
-
+    private SequentialCommandGroup shootPreload() {
         return new SequentialCommandGroup(
-                // Shooter spins from the start of the match, not during init
-                new InstantCommand(() -> m_robot.m_shooterPollen.spinUp(2250)),
-
-                // Stop 1: drive up and shoot preload
-                run(moveForward),
-                new WaitUntilCommand(()-> m_robot.m_shooterPollen.atSpeed()).withTimeout(2000),
-                lap("Shot 1 starts"),
                 new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen()),
                 new WaitCommand(RAMP_STEP_MS),
                 new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.1)),
@@ -125,24 +115,42 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.8)),
                 new WaitCommand(700),
                 new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed()),
-                new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.8)),
+                new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.8)));
+    }
+
+
+        private SequentialCommandGroup shootPollen() {
+            return new SequentialCommandGroup(new WaitCommand(SHOT2_SETTLE_MS),
+                    new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen()),
+                    new WaitCommand(520),
+                    new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.5)),
+                    new WaitCommand(SHOT2_FEED_MS),
+                    new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed())
+        );
+    }
+
+    @Override
+    public SequentialCommandGroup buildTasks() {
+        m_clock.reset();    // buildTasks() runs right after START, so this is time 0
+
+        return new SequentialCommandGroup(
+                // Shooter spins from the start of the match, not during init
+                new InstantCommand(() -> m_robot.m_shooterPollen.spinUp(2250)),
+
+                // Stop 1: drive up and shoot preload
+                run(moveForward),
+                new WaitUntilCommand(()-> m_robot.m_shooterPollen.atSpeed()).withTimeout(2000),
+                lap("Shot 1 starts"),
+                shootPreload(),
                 lap("Shot 1 done"),
+
 
                 run(pickUpCorner),
                 lap("In the corner"),
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOff()),
                 run(getPickUpCorner2),
                 lap("At shot 2"),
-
-
-                // Stop 5: settle, then shoot.
-                // Gate opens first; the intake only turns on 0.52 s later.
-                new WaitCommand(SHOT2_SETTLE_MS),
-                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen()),
-                new WaitCommand(520),
-                new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.5)),
-                new WaitCommand(SHOT2_FEED_MS),
-                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed()),
+                shootPollen(),
                 lap("Shot 2 done"),
 
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
