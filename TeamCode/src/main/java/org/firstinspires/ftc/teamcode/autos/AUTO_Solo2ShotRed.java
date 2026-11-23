@@ -174,10 +174,10 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 run(intakeFLower),
                 lap("At the flower"),
                 new WaitCommand(500),
-                lap("Shooting load three"),
                 run(backToShot),
+                lap("Shot started"),
                 shootPollen(),
-
+                lap("Shot 3 done"),
 
                 new InstantCommand(() -> Actions.runBlocking(park)),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud()),
