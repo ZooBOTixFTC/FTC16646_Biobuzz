@@ -26,6 +26,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     // Stop 5: shot 2, in front of the flower (code numbers, not real field inches)
     public static double SHOT2_X = -42.5;
     public static double SHOT2_Y = 75;
+
     public static double SHOT2_HEADING = -80;    // degrees
     // Flower: how far it backs up into the flower (a y number)
     public static double FLOWER_Y = 78;
@@ -72,13 +73,13 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 .setTangent(Math.toRadians(90))         // start moving out of the corner
                 .splineToSplineHeading(new Pose2d(-60, -20, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up
                 .splineToSplineHeading(new Pose2d(-60, 40, Math.toRadians(0)), Math.toRadians(90))    // pass the hive on the left (more negative X = further from hive)
-                .splineToSplineHeading(new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING)), Math.toRadians(90))  // stop 5
+                .splineToSplineHeading(shot2Spot(), Math.toRadians(90))  // stop 5
                 .build();
 
         // Back up to intake from the flower.
         // Starts exactly where stop 5 ends (same numbers), so the robot doesn't spin first (Task 6.2).
         intakeFLower = m_robot.drivetrain.getDrive()
-                .actionBuilder(new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING)))
+                .actionBuilder(shot2Spot())
                 .turnTo(Math.toRadians(-90))
                 .lineToY(FLOWER_Y)
                 .build();
@@ -127,6 +128,10 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                     new WaitCommand(SHOT2_FEED_MS),
                     new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed())
         );
+    }
+
+    private Pose2d shot2Spot() {
+        return new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING));
     }
 
     @Override
