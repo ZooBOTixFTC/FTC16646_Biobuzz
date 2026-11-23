@@ -27,6 +27,9 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double SHOT2_X = -42.5;
     public static double SHOT2_Y = 75;
 
+    public static double PARK_X = -79.5;
+
+    public static double PARK_Y = 47;
     public static double HIVE_PASS_X = -72;
 
     public static double SHOT2_HEADING = -80;    // degrees
@@ -94,9 +97,8 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
 
         // Park (later): must start where the flower path ends = (SHOT2_X, FLOWER_Y) facing -90°
         park = m_robot.drivetrain.getDrive()
-                .actionBuilder(new Pose2d(-55, 85, Math.toRadians(-66)))
-                .strafeToLinearHeading(new Vector2d(-37, 30), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-60, 54), Math.toRadians(90))
+                .actionBuilder(new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING)))
+                .strafeTo(new Vector2d(PARK_X, PARK_Y))
                 .build();
     }
 
@@ -128,13 +130,13 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     }
 
 
-        private SequentialCommandGroup shootPollen() {
-            return new SequentialCommandGroup(new WaitCommand(SHOT2_SETTLE_MS),
-                    new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen()),
-                    new WaitCommand(520),
-                    new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.5)),
-                    new WaitCommand(SHOT2_FEED_MS),
-                    new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed())
+    private SequentialCommandGroup shootPollen() {
+        return new SequentialCommandGroup(new WaitCommand(SHOT2_SETTLE_MS),
+                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen()),
+                new WaitCommand(520),
+                new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.5)),
+                new WaitCommand(SHOT2_FEED_MS),
+                new InstantCommand(() -> m_robot.m_shooterPollen.setStopperClosed())
         );
     }
 
@@ -175,12 +177,11 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 lap("Shooting load three"),
                 run(backToShot),
                 shootPollen(),
-                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud())
 
 
-
-//                new InstantCommand(() -> Actions.runBlocking(park)),
-//                lap("Done")
+                new InstantCommand(() -> Actions.runBlocking(park)),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud()),
+                lap("Done")
         );
     }
 }
