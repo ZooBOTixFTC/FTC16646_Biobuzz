@@ -32,10 +32,10 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double FLOWER_Y = 78;
 
     // ---- Time savers: if one causes problems, put back the old value shown ----
-    public static int SHOT2_FEED_MS = 2000;      // how long shot 2 feeds          (was 3500)
+    public static int SHOT2_FEED_MS = 3500;      // how long shot 2 feeds          (was 3500)
     public static double CORNER_PAUSE_SEC = 0.5; // pause in the garden corner     (was 1)
-    public static int RAMP_STEP_MS = 150;        // shot 1 intake ramp, each step  (was 250)
-    public static int SHOT2_SETTLE_MS = 200;     // settle before shot 2           (was 400)
+    public static int RAMP_STEP_MS = 250;        // shot 1 intake ramp, each step  (was 250)
+    public static int SHOT2_SETTLE_MS = 400;     // settle before shot 2           (was 400)
 
 
     private Action moveForward, shoot, pickUpCorner, getPickUpCorner2, intakeFLower, park;
