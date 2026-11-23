@@ -95,8 +95,9 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     private InstantCommand lap(String what) {
         return new InstantCommand(() -> telemetry.log().add("%s: %.1f s", what, m_clock.seconds()));
     }
-
-
+    private InstantCommand run(Action path) {
+        return new InstantCommand(() -> Actions.runBlocking(path));
+    }
     @Override
     public SequentialCommandGroup buildTasks() {
         m_clock.reset();    // buildTasks() runs right after START, so this is time 0
@@ -106,7 +107,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new InstantCommand(() -> m_robot.m_shooterPollen.spinUp(2250)),
 
                 // Stop 1: drive up and shoot preload
-                new InstantCommand(() -> Actions.runBlocking(moveForward)),
+                run(moveForward),
                 new WaitUntilCommand(()-> m_robot.m_shooterPollen.atSpeed()).withTimeout(2000),
                 lap("Shot 1 starts"),
                 new InstantCommand(() -> m_robot.m_shooterPollen.setStopperOpen()),
@@ -127,10 +128,10 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.8)),
                 lap("Shot 1 done"),
 
-                new InstantCommand(() -> Actions.runBlocking(pickUpCorner)),
+                run(pickUpCorner),
                 lap("In the corner"),
                 new InstantCommand(() -> m_robot.m_intake.kIntakeOff()),
-                new InstantCommand(() -> Actions.runBlocking(getPickUpCorner2)),
+                run(getPickUpCorner2),
                 lap("At shot 2"),
 
 
@@ -145,7 +146,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 lap("Shot 2 done"),
 
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
-                new InstantCommand(() -> Actions.runBlocking(intakeFLower)),
+                run(intakeFLower)
                 lap("At the flower")
 
 //                new InstantCommand(() -> Actions.runBlocking(park)),
