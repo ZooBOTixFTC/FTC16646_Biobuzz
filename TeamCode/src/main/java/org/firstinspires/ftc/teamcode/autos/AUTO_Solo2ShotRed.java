@@ -24,20 +24,19 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
 
     // ---- Tune these on Dashboard, then copy the good numbers back here ----
     // Stop 5: shot 2, in front of the flower (code numbers, not real field inches)
-    public static double SHOT2_X = -42.5;
+    public static double SHOT2_X = -45.5;
     public static double SHOT2_Y = 75;
 
-    public static double PARK_X = -79.5;
+    public static double PARK_X = -95;
 
     public static double PARK_Y = 47;
     public static double HIVE_PASS_X = -72;
 
     public static double SHOT2_HEADING = -80;    // degrees
     // Flower: how far it backs up into the flower (a y number)
-    public static double FLOWER_Y = 82;
-
+    public static double FLOWER_Y = 84;
     // ---- Time savers: if one causes problems, put back the old value shown ----
-    public static int SHOT2_FEED_MS = 3500;      // how long shot 2 feeds          (was 3500)
+    public static int SHOT2_FEED_MS = 2000;      // how long shot 2 feeds          (was 3500)
     public static double CORNER_PAUSE_SEC = 0.5; // pause in the garden corner     (was 1)
     public static int RAMP_STEP_MS = 250;        // shot 1 intake ramp, each step  (was 250)
     public static int SHOT2_SETTLE_MS = 400;     // settle before shot 2           (was 400)
@@ -98,6 +97,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         // Park (later): must start where the flower path ends = (SHOT2_X, FLOWER_Y) facing -90°
         park = m_robot.drivetrain.getDrive()
                 .actionBuilder(new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING)))
+                .turnTo(Math.toRadians(-90))
                 .strafeTo(new Vector2d(PARK_X, PARK_Y))
                 .build();
     }
@@ -173,14 +173,16 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
 
                 run(intakeFLower),
                 lap("At the flower"),
-                new WaitCommand(500),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
+                new WaitCommand(1250),
                 run(backToShot),
                 lap("Shot started"),
                 shootPollen(),
                 lap("Shot 3 done"),
 
-                new InstantCommand(() -> Actions.runBlocking(park)),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud()),
+                new InstantCommand(() -> Actions.runBlocking(park)),
                 lap("Done")
         );
     }
