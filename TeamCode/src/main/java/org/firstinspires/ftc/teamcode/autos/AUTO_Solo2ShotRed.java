@@ -64,15 +64,15 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         // Stop 2: curve toward the corner, turning to 45° so the intake (back) points into the corner
         pickUpCorner = m_robot.drivetrain.getDrive()
                 .actionBuilder(new Pose2d(-12, -61, Math.toRadians(90)))
-                .splineToLinearHeading(new Pose2d(-60, -56.25, Math.toRadians(45)), Math.toRadians(135))
-                .strafeTo(new Vector2d(-81, -56.25))   // stop 3: slide into the corner, stays at 45°
+                .splineToLinearHeading(new Pose2d(-60, -59, Math.toRadians(45)), Math.toRadians(135))
+                .strafeTo(new Vector2d(-81, -59))   // stop 3: slide into the corner, stays at 45°
                 .turnTo(Math.toRadians(90))            // turn in place to face 90°
                 .build();
 
 
         // Stops 3-5: wait in the corner, then drive up past the hive to stop 5
         getPickUpCorner2 = m_robot.drivetrain.getDrive()
-                .actionBuilder(new Pose2d(-81, -56.25, Math.toRadians(90)))
+                .actionBuilder(new Pose2d(-81, -59, Math.toRadians(90)))
                 .waitSeconds(CORNER_PAUSE_SEC)         // let the garden pollen in
                 .setTangent(Math.toRadians(90))         // start moving out of the corner
                 .splineToSplineHeading(new Pose2d(HIVE_PASS_X, -20, Math.toRadians(50)), Math.toRadians(90))  // stop 4: now heading up

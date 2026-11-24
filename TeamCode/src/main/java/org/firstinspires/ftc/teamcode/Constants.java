@@ -17,7 +17,7 @@ public class Constants {
         public static final double NECTAR_TARGET_VELOCITY = 2000.0;  // flywheel RPM, keep below ~2000
         public static final double NECTAR_SERVO_DELAY_SEC = 0;
         public static final double NECTAR_SERVO_OPEN_SEC = 3.0;
-        public static double NECTAR_SERVO_INITIAL_POS = 0.4;   // not used until Necter gets a servo
+        public static double NECTAR_SERVO_INITIAL_POS = 0.2;   // not used until Necter gets a servo
         public static final double NECTAR_SERVO_SECOND_POS = 0.55;
     }
 

@@ -56,21 +56,21 @@ public class AUTO_RedSolo_v2 extends AUTO_Base_v2 {
                 .build();
 
         toCorner = m_robot.drivetrain.getDrive().actionBuilder(pose(-12, -61, 90))
-                .splineToLinearHeading(pose(-60, -56.25, 45), Math.toRadians(135))
-                .strafeTo(new Vector2d(-81, -56.25))
+                .splineToLinearHeading(pose(-60, -59, 45), Math.toRadians(135))
+                .strafeTo(new Vector2d(-81, -59))
                 .turnTo(Math.toRadians(90))
                 .build();
 
         // No waitSeconds here any more: the pause happens before this, with the intake on
         if (A1_DRIVE_BACKWARD) {
-            cornerToShot2 = m_robot.drivetrain.getDrive().actionBuilder(pose(-81, -56.25, 90))
+            cornerToShot2 = m_robot.drivetrain.getDrive().actionBuilder(pose(-81, -59, 90))
                     .setTangent(Math.toRadians(90))
                     .splineToLinearHeading(pose(A1_HIVE_PASS_X, -20, A1_LANE_HEADING), Math.toRadians(90))
                     .splineToLinearHeading(pose(A1_HIVE_PASS_X, 40, A1_LANE_HEADING), Math.toRadians(90))
                     .splineToLinearHeading(shot2(), Math.toRadians(90))
                     .build();
         } else {
-            cornerToShot2 = m_robot.drivetrain.getDrive().actionBuilder(pose(-81, -56.25, 90))
+            cornerToShot2 = m_robot.drivetrain.getDrive().actionBuilder(pose(-81, -59, 90))
                     .setTangent(Math.toRadians(90))
                     .splineToSplineHeading(pose(A1_HIVE_PASS_X, -20, 50), Math.toRadians(90))
                     .splineToSplineHeading(pose(A1_HIVE_PASS_X, 40, 0), Math.toRadians(90))
