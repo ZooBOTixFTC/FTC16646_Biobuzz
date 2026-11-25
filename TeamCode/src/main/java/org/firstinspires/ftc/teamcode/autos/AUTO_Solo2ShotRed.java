@@ -35,7 +35,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double SHOT2_HEADING = -80;    // degrees
     // Flower: how far it backs up into the flower (a y number)
     public static double FLOWER_Y = 84;
-    public static double FLOWER_X_SHIFT = 6;
+    public static double FLOWER_X_SHIFT = 7.5;
     public static double FLOWER_HEADING = -90;   // tweak by 2 if the plow is crooked
     // slide toward the flower base
     // ---- Time savers: if one causes problems, put back the old value shown ----
@@ -88,15 +88,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         intakeFLower = m_robot.drivetrain.getDrive()
                 .actionBuilder(shot2Spot())
                 .turnTo(Math.toRadians(FLOWER_HEADING))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
-                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOTgit2_X + FLOWER_X_SHIFT, FLOWER_Y))
                 .turnTo(Math.toRadians(FLOWER_HEADING))
                 .build();
 
