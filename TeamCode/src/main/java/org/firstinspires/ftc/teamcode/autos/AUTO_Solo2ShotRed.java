@@ -35,7 +35,9 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double SHOT2_HEADING = -80;    // degrees
     // Flower: how far it backs up into the flower (a y number)
     public static double FLOWER_Y = 84;
-    public static double FLOWER_X_SHIFT = 6;   // slide toward the flower base
+    public static double FLOWER_X_SHIFT = 6;
+    public static double FLOWER_HEADING = -90;   // tweak by 2 if the plow is crooked
+    // slide toward the flower base
     // ---- Time savers: if one causes problems, put back the old value shown ----
     public static int SHOT2_FEED_MS = 2000;      // how long shot 2 feeds          (was 3500)
     public static double CORNER_PAUSE_SEC = 0.5; // pause in the garden corner     (was 1)
@@ -85,7 +87,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         // Starts exactly where stop 5 ends (same numbers), so the robot doesn't spin first (Task 6.2).
         intakeFLower = m_robot.drivetrain.getDrive()
                 .actionBuilder(shot2Spot())
-                .turnTo(Math.toRadians(-90))
+                .turnTo(Math.toRadians(FLOWER_HEADING))
                 .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
                 .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
                 .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
@@ -95,6 +97,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
                 .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
                 .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
+                .turnTo(Math.toRadians(FLOWER_HEADING))
                 .build();
 
         backToShot = m_robot.drivetrain.getDrive()
@@ -180,22 +183,27 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
                 shootPollen(),
                 lap("Shot 2 done"),
-                lap("Shot 2 done"),
 
                 new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.75)),
                 run(intakeFLower),
                 lap("At the flower"),
 
-                run(intakeFLower),
-                lap("At the flower"),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
-                new WaitCommand(300),
+                new WaitCommand(250),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
-                new WaitCommand(1000),
+                new WaitCommand(250),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
-                new WaitCommand(300),
+                new WaitCommand(250),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
-                new WaitCommand(300),
+                new WaitCommand(250),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
+                new WaitCommand(250),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
+                new WaitCommand(250),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
+                new WaitCommand(250),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
+                new WaitCommand(400),
                 run(backToShot),
                 lap("Shot started"),
                 shootPollen(),
