@@ -26,7 +26,7 @@ public class SUB_FlowPlow extends SubsystemBase {
     // "public static" (not final) so Dashboard can change them.
     public static double CLOUD_POS = 0.15;    // up position (hard set to 0)
     public static double GROUND_POS = 0.60;
-    public static double FLOPPY_FLOW= 0.5; // down position (positive) - set this to your real down angle
+    public static double FLOPPY_FLOW= 0.35; // down position (positive) - set this to your real down angle
 
     // How far the servo moves each loop. Smaller = slower and gentler.
     // About 0.005 takes roughly 2 to 4 seconds to go from 0 to 0.5 at normal loop speed.

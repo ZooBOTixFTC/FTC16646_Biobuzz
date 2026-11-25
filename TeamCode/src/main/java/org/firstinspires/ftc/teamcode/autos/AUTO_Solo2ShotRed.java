@@ -27,7 +27,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double SHOT2_X = -45.5;
     public static double SHOT2_Y = 75;
 
-    public static double PARK_X = -95;
+    public static double PARK_X = -91;
 
     public static double PARK_Y = 47;
     public static double HIVE_PASS_X = -72;
@@ -35,6 +35,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
     public static double SHOT2_HEADING = -80;    // degrees
     // Flower: how far it backs up into the flower (a y number)
     public static double FLOWER_Y = 84;
+    public static double FLOWER_X_SHIFT = 6;   // slide toward the flower base
     // ---- Time savers: if one causes problems, put back the old value shown ----
     public static int SHOT2_FEED_MS = 2000;      // how long shot 2 feeds          (was 3500)
     public static double CORNER_PAUSE_SEC = 0.5; // pause in the garden corner     (was 1)
@@ -85,12 +86,21 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         intakeFLower = m_robot.drivetrain.getDrive()
                 .actionBuilder(shot2Spot())
                 .turnTo(Math.toRadians(-90))
-                .lineToY(FLOWER_Y)
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT + 3, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT - 3, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
                 .build();
 
         backToShot = m_robot.drivetrain.getDrive()
                 .actionBuilder(flowerSideFlowerSpot())
-                .lineToY(SHOT2_Y)
+                .lineToY(FLOWER_Y - 6)
+                .strafeTo(new Vector2d(SHOT2_X, SHOT2_Y))
                 .turnTo(Math.toRadians(SHOT2_HEADING))
                 .build();
 
@@ -144,7 +154,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         return new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING));
     }
     private Pose2d flowerSideFlowerSpot() {
-        return new Pose2d(SHOT2_X, FLOWER_Y, Math.toRadians(-90));
+        return new Pose2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y, Math.toRadians(-90));
     }
     @Override
     public SequentialCommandGroup buildTasks() {
@@ -170,12 +180,22 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
                 shootPollen(),
                 lap("Shot 2 done"),
+                lap("Shot 2 done"),
+
+                new InstantCommand(() -> m_robot.m_intake.setMotorPower(0.75)),
+                run(intakeFLower),
+                lap("At the flower"),
 
                 run(intakeFLower),
                 lap("At the flower"),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
+                new WaitCommand(300),
                 new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
-                new WaitCommand(1250),
+                new WaitCommand(1000),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowFlopsAround()),
+                new WaitCommand(300),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheGround()),
+                new WaitCommand(300),
                 run(backToShot),
                 lap("Shot started"),
                 shootPollen(),
