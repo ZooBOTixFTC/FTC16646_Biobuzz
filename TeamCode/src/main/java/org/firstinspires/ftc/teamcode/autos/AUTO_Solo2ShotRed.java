@@ -99,8 +99,8 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 .turnTo(Math.toRadians(SHOT2_HEADING))
                 .build();
 
-        // Park (later): must start where the flower path ends = (SHOT2_X, FLOWER_Y) facing -90°
-        park = m_robot.drivetrain.getDrive()
+        // Park: must start where backToShot ends = (SHOT2_X, SHOT2_Y) facing SHOT2_HEADING
+         park = m_robot.drivetrain.getDrive()
                 .actionBuilder(new Pose2d(SHOT2_X, SHOT2_Y, Math.toRadians(SHOT2_HEADING)))
                 .turnTo(Math.toRadians(-90))
                 .strafeTo(new Vector2d(PARK_X, PARK_Y))
@@ -198,11 +198,11 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
                 new WaitCommand(400),
                 run(backToShot),
                 lap("Shot started"),
+                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud()),
                 shootPollen(),
                 lap("Shot 3 done"),
 
-                new InstantCommand(() -> m_robot.m_flowPlow.FlowPlowToTheCloud()),
-                new InstantCommand(() -> Actions.runBlocking(park)),
+                run(park),
                 lap("Done")
         );
     }
