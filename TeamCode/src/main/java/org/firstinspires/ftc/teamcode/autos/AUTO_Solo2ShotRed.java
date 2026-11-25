@@ -88,7 +88,7 @@ public class AUTO_Solo2ShotRed extends Robot_Auto {
         intakeFLower = m_robot.drivetrain.getDrive()
                 .actionBuilder(shot2Spot())
                 .turnTo(Math.toRadians(FLOWER_HEADING))
-                .strafeTo(new Vector2d(SHOTgit2_X + FLOWER_X_SHIFT, FLOWER_Y))
+                .strafeTo(new Vector2d(SHOT2_X + FLOWER_X_SHIFT, FLOWER_Y))
                 .turnTo(Math.toRadians(FLOWER_HEADING))
                 .build();
 
